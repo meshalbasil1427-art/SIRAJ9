@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" data-api="">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -7,10 +7,10 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;600;700;800;900&family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
 
   <style>
+    
     :root {
       --bg: #0B1120; --bg2: #111827; --card: #1F2937; --card2: #374151;
       --text: #F3F4F6; --text2: #9CA3AF; --muted: #6B7280;
@@ -23,21 +23,13 @@
       --font: 'Noto Kufi Arabic', 'Space Grotesk', sans-serif;
       --mono: 'JetBrains Mono', monospace;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body { 
-      font-family: var(--font); background: var(--bg); color: var(--text); 
-      min-height: 100vh; overflow-x: hidden; 
-    }
-
+    body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
     body::before {
       content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
-      background:
-        radial-gradient(ellipse 800px 600px at 20% 10%, rgba(59, 130, 246, 0.04), transparent),
-        radial-gradient(ellipse 600px 800px at 80% 90%, rgba(37, 99, 235, 0.03), transparent);
+      background: radial-gradient(ellipse 800px 600px at 20% 10%, rgba(59,130,246,0.04), transparent),
+                  radial-gradient(ellipse 600px 800px at 80% 90%, rgba(37,99,235,0.03), transparent);
     }
-
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: var(--bg2); }
     ::-webkit-scrollbar-thumb { background: var(--line2); border-radius: 99px; }
@@ -45,7 +37,7 @@
 
     .header {
       position: sticky; top: 0; z-index: 100;
-      background: rgba(11, 17, 32, 0.85); backdrop-filter: blur(20px) saturate(1.4); -webkit-backdrop-filter: blur(20px) saturate(1.4);
+      background: rgba(11,17,32,0.85); backdrop-filter: blur(20px) saturate(1.4);
       border-bottom: 1px solid var(--line); padding: 0 24px; height: 64px;
       display: flex; align-items: center; justify-content: space-between; gap: 12px;
     }
@@ -54,9 +46,9 @@
       width: 40px; height: 40px; border-radius: 12px;
       background: linear-gradient(135deg, var(--primary), var(--primary3));
       display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-      box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+      box-shadow: 0 0 20px rgba(59,130,246,0.4);
     }
-    .brand-title { font-size: 17px; font-weight: 900; letter-spacing: -.01em; color: var(--text); white-space: nowrap; }
+    .brand-title { font-size: 17px; font-weight: 900; letter-spacing: -.01em; }
     .brand-sub { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .header-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 
@@ -67,7 +59,7 @@
     }
     .btn:active { transform: scale(.97); }
     .btn-primary { background: var(--primary); color: #fff; }
-    .btn-primary:hover { background: var(--primary2); box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+    .btn-primary:hover { background: var(--primary2); box-shadow: 0 0 20px rgba(59,130,246,0.3); }
     .btn-ghost { background: rgba(255,255,255,0.06); color: var(--text2); border: 1px solid var(--line); }
     .btn-ghost:hover { background: rgba(255,255,255,0.1); border-color: var(--line2); }
     .btn-soft { background: var(--card2); color: var(--text2); border: 1px solid var(--line); }
@@ -85,20 +77,20 @@
     .step::after { content: ''; position: absolute; left: -50%; right: 50%; top: 50%; height: 2px; background: var(--line); z-index: 0; }
     .step:first-child::after { display: none; }
     .step-num { width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 900; position: relative; z-index: 1; background: var(--card2); color: var(--muted); border: 2px solid var(--line); transition: all .2s ease; }
-    .step.active .step-num { background: var(--primary); color: #fff; border-color: var(--primary); box-shadow: 0 0 16px rgba(59, 130, 246, 0.3); }
+    .step.active .step-num { background: var(--primary); color: #fff; border-color: var(--primary); box-shadow: 0 0 16px rgba(59,130,246,0.3); }
     .step.done .step-num { background: var(--primary3); color: #fff; border-color: var(--primary3); }
     .step-label { font-size: 12px; font-weight: 700; color: var(--muted); transition: color .2s; }
     .step.active .step-label { color: var(--text); }
     .step.done .step-label { color: var(--primary2); }
-    @media(max-width:600px) { .step-label { display: none; } .stepper { gap: 0; justify-content: space-between; } .step { flex: none; } }
+    @media(max-width:600px) { .step-label { display: none; } .stepper { justify-content: space-between; } .step { flex: none; } }
 
     .tabs { display: flex; gap: 4px; margin-bottom: 20px; background: var(--bg2); border-radius: 12px; padding: 4px; border: 1px solid var(--line); }
     .tab { flex: 1; text-align: center; padding: 10px 14px; border-radius: 10px; border: none; background: transparent; color: var(--muted); font-size: 13px; font-weight: 700; cursor: pointer; font-family: var(--font); transition: all .15s ease; }
     .tab:hover { color: var(--text2); background: rgba(255,255,255,0.03); }
-    .tab.active { background: var(--primary); color: #fff; box-shadow: 0 2px 12px rgba(59, 130, 246, 0.25); }
+    .tab.active { background: var(--primary); color: #fff; box-shadow: 0 2px 12px rgba(59,130,246,0.25); }
 
     .section-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 16px; }
-    .section-head h2 { font-size: 16px; font-weight: 900; color: var(--text); }
+    .section-head h2 { font-size: 16px; font-weight: 900; }
     .hint { color: var(--muted); font-size: 12px; line-height: 1.7; margin-bottom: 16px; }
     .badge { font-size: 10px; font-weight: 800; padding: 5px 10px; border-radius: 8px; background: var(--primaryDim); color: var(--primary); letter-spacing: .04em; }
 
@@ -107,7 +99,12 @@
     .field label { display: block; font-size: 11px; font-weight: 800; color: var(--text2); margin-bottom: 6px; letter-spacing: .02em; }
     .input, .select, .textarea { width: 100%; padding: 11px 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg2); color: var(--text); font-size: 14px; font-family: var(--font); transition: border-color .15s,box-shadow .15s; }
     .textarea { min-height: 80px; resize: vertical; }
-    .input:focus, .select:focus, .textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12); }
+    .input:focus, .select:focus, .textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59,130,246,0.12); background-color: var(--bg2) !important; color: var(--text) !important; }
+    input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus, input:-webkit-autofill:active {
+      -webkit-box-shadow: 0 0 0 30px var(--bg2) inset !important;
+      -webkit-text-fill-color: var(--text) !important;
+      transition: background-color 5000s ease-in-out 0s;
+    }
     .field.has-error .error-msg { display: block; }
     .field.has-error .input, .field.has-error .select { border-color: var(--danger); }
     .error-msg { font-size: 11px; color: var(--danger); margin-top: 4px; display: none; }
@@ -126,20 +123,22 @@
     .x { cursor: pointer; font-weight: 900; opacity: .5; color: var(--danger); font-size: 14px; }
     .x:hover { opacity: 1; }
     input[type=range] { -webkit-appearance: none; appearance: none; height: 6px; background: var(--line); border-radius: 99px; outline: none; width: 120px; }
-    input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--primary); cursor: pointer; box-shadow: 0 0 8px rgba(59, 130, 246, 0.3); }
+    input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--primary); cursor: pointer; box-shadow: 0 0 8px rgba(59,130,246,0.3); }
 
     .roles-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
     @media(max-width:720px) { .roles-grid { grid-template-columns: 1fr; } }
     .role-card { border: 1px solid var(--line); border-radius: 14px; background: var(--card); padding: 14px; cursor: pointer; transition: all .15s ease; position: relative; overflow: hidden; }
-    .role-card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(59, 130, 246, 0.04), transparent); opacity: 0; transition: opacity .2s; }
+    .role-card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(59,130,246,0.04), transparent); opacity: 0; transition: opacity .2s; }
     .role-card:hover { border-color: var(--line2); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
     .role-card:hover::before { opacity: 1; }
-    .role-card.active { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15), 0 8px 24px rgba(0,0,0,0.3); }
+    .role-card.active { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(59,130,246,0.15), 0 8px 24px rgba(0,0,0,0.3); }
     .role-card.active::before { opacity: 1; }
     .role-card h3 { font-size: 14px; font-weight: 800; margin-bottom: 4px; position: relative; }
     .role-card .desc { font-size: 12px; color: var(--muted); line-height: 1.5; position: relative; }
     .role-meta { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; position: relative; }
     .tag { font-size: 10px; padding: 3px 8px; border-radius: 6px; background: var(--card2); color: var(--text2); border: 1px solid var(--line); }
+    .market-info { margin-top: 8px; padding: 6px 10px; background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.15); border-radius: 8px; position: relative; }
+    .market-info span { font-size: 10px; color: #10B981; font-weight: 700; }
 
     .kpi { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
     @media(max-width:560px) { .kpi { grid-template-columns: 1fr; } }
@@ -151,7 +150,7 @@
     .small { font-size: 12px; color: var(--muted); line-height: 1.6; }
 
     .panel { border: 1px solid var(--line); border-radius: 14px; padding: 16px; background: var(--card); margin-bottom: 12px; }
-    .panel h4 { font-size: 14px; font-weight: 800; margin-bottom: 10px; color: var(--text); }
+    .panel h4 { font-size: 14px; font-weight: 800; margin-bottom: 10px; }
     .list { margin: 0; padding-inline-start: 18px; color: var(--text2); font-size: 13px; line-height: 1.8; }
     .list li::marker { color: var(--primary3); }
     .warn { color: var(--warn); font-weight: 700; }
@@ -163,14 +162,16 @@
 
     .week { border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-bottom: 8px; background: var(--bg2); }
     .week-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
-    .week-head .w { font-weight: 900; color: var(--text); font-size: 14px; }
+    .week-head .w { font-weight: 900; font-size: 14px; }
     .week-head .focus { font-size: 11px; color: var(--primary); font-weight: 800; background: var(--primaryDim); padding: 3px 8px; border-radius: 6px; }
     .week ul { margin: 6px 0 0; padding-inline-start: 18px; font-size: 13px; color: var(--text2); line-height: 1.8; }
     .week .phase-tag { font-size: 10px; font-weight: 800; color: var(--warn); background: rgba(245,158,11,0.1); padding: 2px 8px; border-radius: 6px; margin-inline-start: 8px; }
     .project { border: 1px solid var(--line); border-radius: 14px; padding: 16px; background: var(--card); margin-bottom: 12px; }
     .project h5 { font-size: 14px; font-weight: 800; margin-bottom: 6px; }
+    .project .proj-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .project .proj-tag { font-size: 10px; padding: 3px 8px; border-radius: 6px; background: var(--primaryDim); color: var(--primary); font-weight: 700; }
 
-    .mono { font-family: var(--mono); font-size: 12px; background: var(--bg2); border: 1px solid var(--line); border-radius: 10px; padding: 12px; overflow: auto; white-space: pre-wrap; color: var(--text2); line-height: 1.6; max-height: 300px; direction: ltr !important; text-align: left !important; unicode-bidi: plaintext; }
+    .mono { font-family: var(--mono); font-size: 12px; background: var(--bg2); border: 1px solid var(--line); border-radius: 10px; padding: 12px; overflow: auto; white-space: pre-wrap; color: var(--text2); line-height: 1.6; max-height: 300px; direction: ltr !important; text-align: left !important; }
 
     .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
     @media(max-width:640px) { .compare-grid { grid-template-columns: 1fr; } }
@@ -180,7 +181,7 @@
     .compare-row:last-child { border: none; }
 
     .assistant { border-radius: var(--radius); background: var(--bg2); border: 1px solid var(--line); padding: 16px; display: flex; flex-direction: column; height: fit-content; position: sticky; top: 80px; }
-    .dialog-title { font-size: 14px; font-weight: 900; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; color: var(--text); }
+    .dialog-title { font-size: 14px; font-weight: 900; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
     .dialog { border-radius: 14px; background: var(--card); border: 1px solid var(--line); padding: 12px; min-height: 200px; max-height: 360px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
     .msg { display: flex; }
     .msg-siraj { justify-content: flex-start; }
@@ -193,7 +194,7 @@
     .footnote { margin-top: 12px; font-size: 11px; color: var(--muted); line-height: 1.6; padding-top: 12px; border-top: 1px solid var(--line); }
     .quick-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
     .quick-btn { font-size: 11px; padding: 6px 10px; border-radius: 8px; background: var(--card2); color: var(--text2); border: 1px solid var(--line); cursor: pointer; font-family: var(--font); transition: all .15s; }
-    .quick-btn:hover { background: var(--primaryDim); color: var(--primary); border-color: rgba(59, 130, 246, 0.2); }
+    .quick-btn:hover { background: var(--primaryDim); color: var(--primary); border-color: rgba(59,130,246,0.2); }
 
     .report-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
     @media(max-width:640px) { .report-summary { grid-template-columns: 1fr 1fr; } }
@@ -202,7 +203,7 @@
     .report-stat .lbl { font-size: 10px; color: var(--muted); font-weight: 700; margin-top: 4px; }
 
     .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; pointer-events: none; }
-    .toast > div { pointer-events: auto; background: var(--primary); color: #fff; padding: 10px 20px; border-radius: 12px; font-size: 13px; font-weight: 700; box-shadow: 0 8px 30px rgba(59, 130, 246, 0.3); opacity: 0; transform: translateY(10px); transition: all .25s ease; }
+    .toast > div { pointer-events: auto; background: var(--primary); color: #fff; padding: 10px 20px; border-radius: 12px; font-size: 13px; font-weight: 700; box-shadow: 0 8px 30px rgba(59,130,246,0.3); opacity: 0; transform: translateY(10px); transition: all .25s ease; }
     .toast.show > div { opacity: 1; transform: translateY(0); }
 
     .estimate-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 10px; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.2); color: var(--warn); font-size: 12px; font-weight: 700; margin-top: 8px; }
@@ -213,67 +214,42 @@
     .miss-ev { margin-top: 4px; font-size: 12px; color: var(--muted); }
     .evlink { color: var(--primary); text-decoration: none; font-weight: 800; }
     .evlink:hover { text-decoration: underline; }
-    .evnote { color: var(--text2); }
-    .evnone { opacity: .7; }
 
-    [dir=ltr] .brand-title { font-family: 'Space Grotesk', var(--font); }
+    /* Evidence Modal */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 9000; display: none; align-items: center; justify-content: center; }
+    .modal-overlay.open { display: flex; }
+    .modal-box { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 24px; width: 90%; max-width: 440px; animation: modalIn .2s ease; }
+    @keyframes modalIn { from { opacity: 0; transform: scale(.95); } to { opacity: 1; transform: scale(1); } }
+    .modal-box h3 { font-size: 16px; font-weight: 900; margin-bottom: 16px; }
+    .modal-box .field { margin-bottom: 12px; }
+    .modal-actions { display: flex; gap: 8px; margin-top: 16px; }
 
-    /* ─── LANDING PAGE (صفحة الترحيب) ─── */
-    .landing-container {
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      min-height: 75vh; text-align: center; position: relative; z-index: 10;
-      animation: fadeUp 0.8s ease forwards;
-    }
-    .glow-orb {
-      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      width: 450px; height: 450px; 
-      background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
-      filter: blur(40px); z-index: -1; animation: pulseOrb 4s infinite alternate;
-    }
-    @keyframes pulseOrb { 
-      0% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); } 
-      100% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); } 
-    }
-    .landing-badge {
-      display: inline-block; padding: 8px 16px; background: rgba(59, 130, 246, 0.1);
-      color: var(--primary); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 99px;
-      font-size: 13px; font-weight: 800; margin-bottom: 24px; letter-spacing: 0.5px;
-    }
-    .landing-title { 
-      font-size: 46px; font-weight: 900; line-height: 1.4; color: var(--text); 
-      margin-bottom: 20px; letter-spacing: -1px; 
-    }
-    .landing-title .highlight { 
-      background: linear-gradient(90deg, var(--primary), #8B5CF6); 
-      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; 
-    }
-    .landing-desc { 
-      font-size: 17px; color: var(--text2); max-width: 650px; line-height: 1.8; margin-bottom: 36px; 
-    }
+    /* Landing */
+    .landing-container { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 75vh; text-align: center; position: relative; z-index: 10; animation: fadeUp 0.8s ease forwards; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .glow-orb { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 450px; height: 450px; background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%); filter: blur(40px); z-index: -1; animation: pulseOrb 4s infinite alternate; }
+    @keyframes pulseOrb { 0% { opacity: 0.5; transform: translate(-50%,-50%) scale(1); } 100% { opacity: 1; transform: translate(-50%,-50%) scale(1.1); } }
+    .landing-badge { display: inline-block; padding: 8px 16px; background: rgba(59,130,246,0.1); color: var(--primary); border: 1px solid rgba(59,130,246,0.2); border-radius: 99px; font-size: 13px; font-weight: 800; margin-bottom: 24px; }
+    .landing-title { font-size: 46px; font-weight: 900; line-height: 1.4; margin-bottom: 20px; letter-spacing: -1px; }
+    .landing-title .highlight { background: linear-gradient(90deg, var(--primary), #8B5CF6); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .landing-desc { font-size: 17px; color: var(--text2); max-width: 650px; line-height: 1.8; margin-bottom: 36px; }
     .landing-features { display: flex; gap: 16px; justify-content: center; margin-bottom: 40px; flex-wrap: wrap; }
-    .landing-features span { 
-      background: var(--card); padding: 10px 18px; border-radius: 12px; 
-      font-size: 14px; font-weight: 700; color: var(--text); border: 1px solid var(--line); 
-    }
-    .landing-btn { 
-      font-size: 18px; padding: 16px 36px; border-radius: 14px; 
-      box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3); transition: all 0.3s ease; 
-    }
-    .landing-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(59, 130, 246, 0.5); }
-    @media (max-width: 600px) { .landing-title { font-size: 32px; } .glow-orb { width: 300px; height: 300px; } }
+    .landing-features span { background: var(--card); padding: 10px 18px; border-radius: 12px; font-size: 14px; font-weight: 700; border: 1px solid var(--line); }
+    .landing-btn { font-size: 18px; padding: 16px 36px; border-radius: 14px; box-shadow: 0 8px 24px rgba(59,130,246,0.3); transition: all 0.3s ease; }
+    .landing-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(59,130,246,0.5); }
+    @media(max-width:600px) { .landing-title { font-size: 32px; } .glow-orb { width: 300px; height: 300px; } }
 
-    /* 🌟 تأثير المنارة التقنية 🌟 */
-    @keyframes pulseNode {
-      0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5); }
-      70% { box-shadow: 0 0 0 12px rgba(59, 130, 246, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
-    }
-    .tech-bulb-loading {
-      position: relative; overflow: hidden;
-      background: linear-gradient(135deg, var(--primary3), var(--primary)) !important;
-      color: white !important; border: none !important;
-      animation: pulseNode 1.5s infinite; transition: all 0.3s ease;
-    }
+    @keyframes pulseNode { 0% { box-shadow: 0 0 0 0 rgba(59,130,246,0.5); } 70% { box-shadow: 0 0 0 12px rgba(59,130,246,0); } 100% { box-shadow: 0 0 0 0 rgba(59,130,246,0); } }
+    .tech-bulb-loading { position: relative; overflow: hidden; background: linear-gradient(135deg, var(--primary3), var(--primary)) !important; color: white !important; border: none !important; animation: pulseNode 1.5s infinite; }
+    .fade-out-landing { opacity: 0 !important; transform: scale(0.95) !important; pointer-events: none; transition: all 0.5s ease !important; }
+    .fade-in-app { animation: smoothEnter 0.6s ease forwards; }
+    @keyframes smoothEnter { 0% { opacity: 0; transform: translateY(30px); } 100% { opacity: 1; transform: translateY(0); } }
+
+    .typing-indicator { display: inline-flex; gap: 4px; padding: 8px 14px; }
+    .typing-indicator span { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); animation: blink 1.4s infinite both; }
+    .typing-indicator span:nth-child(2) { animation-delay: .2s; }
+    .typing-indicator span:nth-child(3) { animation-delay: .4s; }
+    @keyframes blink { 0%,80%,100% { opacity: .3; } 40% { opacity: 1; } }
   </style>
 </head>
 <body>
@@ -281,10 +257,9 @@
   <header class="header">
     <div class="header-left">
       <div class="logo" aria-hidden="true">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 12 3a4.65 4.65 0 0 0-4.5 8.5c.76.76 1.23 1.52 1.41 2.5"></path>
-          <circle cx="12" cy="9" r="1.5"></circle><path d="M12 10.5v3.5"></path><circle cx="9.5" cy="14" r="1"></circle><circle cx="14.5" cy="14" r="1"></circle>
-          <path d="M12 10.5l-2.5 2.5"></path><path d="M12 10.5l2.5 2.5"></path>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 12 3a4.65 4.65 0 0 0-4.5 8.5c.76.76 1.23 1.52 1.41 2.5"/>
+          <circle cx="12" cy="9" r="1.5"/><path d="M12 10.5v3.5"/>
         </svg>
       </div>
       <div>
@@ -293,7 +268,7 @@
       </div>
     </div>
     <div class="header-right">
-      <span class="chip" id="mockChip">MVP</span>
+      <span class="chip">MVP+</span>
       <button class="btn btn-ghost" id="langBtn">EN</button>
       <button class="btn btn-primary" id="shareBtn">🔗 مشاركة</button>
     </div>
@@ -306,9 +281,7 @@
         <div class="glow-orb"></div>
         <div class="landing-badge">🚀 أهلاً بك في سِراج — منتج هاكاثون طويق</div>
         <h1 class="landing-title">لنبني معاً مستقبلك المهني <br><span class="highlight">لتحقيق رؤية 2030</span></h1>
-        <p class="landing-desc">
-          أول مستشار مهني سعودي مدعوم بالذكاء الاصطناعي. يقيس جاهزيتك، يحلل فجوة مهارات بدقة، ويبني لك خارطة طريق مخصصة لدخول سوق العمل بثقة وفعالية.
-        </p>
+        <p class="landing-desc">أول مستشار مهني سعودي مدعوم بالذكاء الاصطناعي. يقيس جاهزيتك، يحلل فجوة مهاراتك بدقة، ويبني لك خارطة طريق مخصصة لدخول سوق العمل بثقة.</p>
         <div class="landing-features">
           <span>✨ تحليل ذكي بالـ AI</span>
           <span>🗺️ خارطة طريق مخصصة</span>
@@ -317,25 +290,12 @@
         <button class="btn btn-primary landing-btn" id="startAppBtn">ابدأ رحلتك الآن ➔</button>
       </div>
 
-      <div id="appContent" style="display: none;">
-
+      <div id="appContent" style="display:none;">
         <div class="stepper" id="stepper">
-          <div class="step active" data-step="profile" id="step1">
-            <div class="step-num">١</div>
-            <div class="step-label">الملف الشخصي</div>
-          </div>
-          <div class="step" data-step="roles" id="step2">
-            <div class="step-num">٢</div>
-            <div class="step-label">الوظيفة المستهدفة</div>
-          </div>
-          <div class="step" data-step="analysis" id="step3">
-            <div class="step-num">٣</div>
-            <div class="step-label">التحليل</div>
-          </div>
-          <div class="step" data-step="report" id="step4">
-            <div class="step-num">٤</div>
-            <div class="step-label">التقرير</div>
-          </div>
+          <div class="step active" data-step="profile" id="step1"><div class="step-num">١</div><div class="step-label">الملف الشخصي</div></div>
+          <div class="step" data-step="roles" id="step2"><div class="step-num">٢</div><div class="step-label">الوظيفة المستهدفة</div></div>
+          <div class="step" data-step="analysis" id="step3"><div class="step-num">٣</div><div class="step-label">التحليل</div></div>
+          <div class="step" data-step="report" id="step4"><div class="step-num">٤</div><div class="step-label">التقرير</div></div>
         </div>
 
         <div class="grid">
@@ -347,146 +307,76 @@
               <button class="tab" data-tab="report">التقرير</button>
             </div>
 
+            <!-- PROFILE -->
             <section id="viewProfile">
               <div class="section-head"><h2>ملف الطالب</h2><span class="badge">Profile</span></div>
-              <div class="hint">عبّئ بياناتك وأضف مهاراتك. اختر “القطاع” لتفعيل Saudi Lens (توزين مختلف للمهارات).</div>
-
+              <div class="hint">عبّئ بياناتك وأضف مهاراتك. اختر "القطاع" لتفعيل Saudi Lens (توزين مختلف للمهارات حسب سوق العمل السعودي).</div>
               <div class="row">
-                <div class="field" id="fieldMajor">
-                  <label>التخصص *</label>
-                  <input class="input" id="major" placeholder="مثال: نظم المعلومات"/>
-                  <div class="error-msg">التخصص مطلوب (حرفين على الأقل)</div>
-                </div>
-                <div class="field">
-                  <label>المستوى التعليمي</label>
-                  <select class="select" id="eduLevel">
-                    <option value="HS">ثانوي</option>
-                    <option value="UNI" selected>جامعة</option>
-                    <option value="GRAD">خريج</option>
-                    <option value="PRO">محترف</option>
-                  </select>
-                </div>
+                <div class="field" id="fieldMajor"><label>التخصص *</label><input class="input" id="major" placeholder="مثال: نظم المعلومات" autocomplete="off"/><div class="error-msg">التخصص مطلوب (حرفين على الأقل)</div></div>
+                <div class="field"><label>المستوى التعليمي</label><select class="select" id="eduLevel"><option value="HS">ثانوي</option><option value="UNI" selected>جامعة</option><option value="GRAD">خريج</option><option value="PRO">محترف</option></select></div>
               </div>
-
               <div class="row">
-                <div class="field">
-                  <label>الخبرة (سنوات)</label>
-                  <input class="input" id="experienceYears" type="number" min="0" step="0.5" value="0"/>
-                </div>
-                <div class="field">
-                  <label>تفضيلات التعلم</label>
-                  <select class="select" id="prefs">
-                    <option value="balanced" selected>متوازن (12 أسبوع)</option>
-                    <option value="fast">مكثف (8 أسابيع)</option>
-                    <option value="parttime">جزئي (16 أسبوع)</option>
-                  </select>
-                </div>
+                <div class="field"><label>الخبرة (سنوات)</label><input class="input" id="experienceYears" type="number" min="0" step="0.5" value="0"/></div>
+                <div class="field"><label>تفضيلات التعلم</label><select class="select" id="prefs"><option value="balanced" selected>متوازن (12 أسبوع)</option><option value="fast">مكثف (8 أسابيع)</option><option value="parttime">جزئي (16 أسبوع)</option></select></div>
               </div>
-
               <div class="row">
-                <div class="field">
-                  <label>القطاع المستهدف (Saudi Lens)</label>
-                  <select class="select" id="sector">
-                    <option value="gov">حكومي</option>
-                    <option value="quasi" selected>شبه حكومي</option>
-                    <option value="private">خاص</option>
-                  </select>
-                </div>
-                <div class="field">
-                  <label>الشهادات (افصل بفاصلة)</label>
-                  <input class="input" id="certs" placeholder="مثال: Google Data Analytics, AWS CCP"/>
-                </div>
+                <div class="field"><label>القطاع المستهدف (Saudi Lens 🇸🇦)</label><select class="select" id="sector"><option value="gov">حكومي</option><option value="quasi" selected>شبه حكومي</option><option value="private">خاص</option></select></div>
+                <div class="field"><label>الشهادات (افصل بفاصلة)</label><input class="input" id="certs" placeholder="مثال: Google Data Analytics, AWS CCP"/></div>
               </div>
-
               <div class="row">
-                <div class="field">
-                  <label>أدوات تعرفها (اختياري)</label>
-                  <input class="input" id="tools" placeholder="مثال: Power BI, Excel, Git"/>
-                </div>
-                <div class="field">
-                  <label>ملاحظة</label>
-                  <input class="input" disabled value="إثبات المهارات يظهر بعد التحليل داخل قائمة الفجوات"/>
-                </div>
+                <div class="field"><label>أدوات تعرفها (اختياري)</label><input class="input" id="tools" placeholder="مثال: Power BI, Excel, Git"/></div>
+                <div class="field"><label>ملاحظة</label><input class="input" disabled value="الخبرة والشهادات تؤثر على نسبة الجاهزية"/></div>
               </div>
-
               <div class="skills-panel">
-                <div class="section-head" style="margin-bottom:10px">
-                  <h2>مهاراتك (مستوى 1–5)</h2>
-                  <span class="small">أضف مهارة ثم حدّد المستوى</span>
-                </div>
-
+                <div class="section-head" style="margin-bottom:10px"><h2>مهاراتك (مستوى 1–5)</h2><span class="small">أضف مهارة ثم حدّد المستوى</span></div>
                 <div class="skill-add">
-                  <input class="input" id="skillName" placeholder="مثال: SQL, Python, تحليل المتطلبات"/>
-                  <select class="select" id="skillLevel">
-                    <option value="1">1 مبتدئ</option>
-                    <option value="2">2</option>
-                    <option value="3" selected>3 متوسط</option>
-                    <option value="4">4 متقدم</option>
-                    <option value="5">5 خبير</option>
-                  </select>
+                  <input class="input" id="skillName" placeholder="مثال: SQL, Python, تحليل المتطلبات" autocomplete="off"/>
+                  <select class="select" id="skillLevel"><option value="1">1 مبتدئ</option><option value="2">2</option><option value="3" selected>3 متوسط</option><option value="4">4 متقدم</option><option value="5">5 خبير</option></select>
                   <button class="btn btn-primary" id="addSkillBtn">+ إضافة</button>
-                  <button class="btn btn-primary" style="background:var(--warn);color:#000" id="loadSampleBtn">🚀 عرض ديمو مباشر (لجنة التحكيم)</button>
+                  <button class="btn btn-primary" style="background:var(--warn);color:#000" id="loadSampleBtn">🚀 عرض ديمو (لجنة التحكيم)</button>
                 </div>
-
-                <div id="skillsEmpty" class="hint" style="text-align:center;padding:20px 0">
-                  لم تُضف مهارات بعد. أضف مهارة واحدة على الأقل للمتابعة.
-                </div>
-
-                <table class="skill-table" style="display:none" id="skillTable">
-                  <thead><tr><th>المهارة</th><th>التطبيع</th><th>المستوى</th><th></th></tr></thead>
-                  <tbody id="skillsBody"></tbody>
-                </table>
-
+                <div id="skillsEmpty" class="hint" style="text-align:center;padding:20px 0">لم تُضف مهارات بعد. أضف مهارة واحدة على الأقل للمتابعة.</div>
+                <table class="skill-table" style="display:none" id="skillTable"><thead><tr><th>المهارة</th><th>التطبيع</th><th>المستوى</th><th></th></tr></thead><tbody id="skillsBody"></tbody></table>
                 <div class="actions">
                   <button class="btn btn-primary" id="saveProfileBtn">💾 حفظ الملف</button>
+                  <button class="btn btn-primary" id="nextStepBtn" style="background:var(--success);color:#fff">التالي ⬅️</button>
                   <button class="btn btn-soft" id="resetProfileBtn">🧹 تصفير</button>
                 </div>
               </div>
             </section>
 
+            <!-- ROLES -->
             <section id="viewRoles" style="display:none">
               <div class="section-head"><h2>اختر الوظيفة المستهدفة</h2><span class="badge">Roles</span></div>
-              <div class="hint">اختر الوظيفة. النسبة المعروضة تقدير سريع (مع Cache للأداء).</div>
-
+              <div class="hint">اختر الوظيفة المناسبة. البطاقات تعرض بيانات سوق العمل السعودي التقريبية.</div>
               <div class="roles-grid" id="rolesGrid"></div>
-
               <div class="actions">
                 <button class="btn btn-primary" id="analyzeBtn">🧠 حلّل الجاهزية</button>
                 <button class="btn btn-soft" id="autoPickBtn">🎯 اختر لي الأنسب</button>
                 <button class="btn btn-ghost" id="compareBtn">⚖️ قارن وظيفتين</button>
               </div>
-
               <div id="comparePanel" class="panel" style="display:none;margin-top:14px">
                 <h4>مقارنة بين وظيفتين</h4>
                 <div class="row">
-                  <div class="field">
-                    <label>الوظيفة الأولى</label>
-                    <select class="select" id="compare1"></select>
-                  </div>
-                  <div class="field">
-                    <label>الوظيفة الثانية</label>
-                    <select class="select" id="compare2"></select>
-                  </div>
+                  <div class="field"><label>الوظيفة الأولى</label><select class="select" id="compare1"></select></div>
+                  <div class="field"><label>الوظيفة الثانية</label><select class="select" id="compare2"></select></div>
                 </div>
                 <button class="btn btn-primary" id="runCompareBtn" style="margin-top:8px">قارن الآن</button>
                 <div class="compare-grid" id="compareResult"></div>
               </div>
             </section>
 
+            <!-- ANALYSIS -->
             <section id="viewAnalysis" style="display:none">
               <div class="section-head"><h2>نتيجة التحليل</h2><span class="badge">Analysis</span></div>
-
               <div class="kpi">
                 <div class="kpi-box">
                   <div class="kpi-title">READINESS SCORE</div>
                   <div class="score" id="scoreValue">—</div>
                   <div class="score-bar"><div class="score-bar-fill" id="scoreBar" style="width:0%"></div></div>
-                  <div class="small" style="margin-top:6px">0–100 بناءً على مطابقة المهارات المطلوبة + Saudi Lens</div>
-                  <div class="estimate-badge" id="estimateBadge" style="display:none">
-                    ⏱️ <span id="estimateText"></span>
-                  </div>
+                  <div class="small" style="margin-top:6px">بناءً على مطابقة المهارات + Saudi Lens + الخبرة + الشهادات</div>
+                  <div class="estimate-badge" id="estimateBadge" style="display:none">⏱️ <span id="estimateText"></span></div>
                 </div>
-
                 <div class="kpi-box">
                   <div class="kpi-title">CONFIDENCE</div>
                   <div class="score" style="font-size:34px" id="confidenceValue">—</div>
@@ -494,499 +384,1255 @@
                   <div class="small" style="margin-top:6px" id="confidenceNote">—</div>
                 </div>
               </div>
-
               <div class="kpi" style="margin-top:0">
-                <div class="kpi-box">
-                  <div class="kpi-title">ROLE</div>
-                  <div style="font-weight:900;font-size:18px;margin-bottom:6px" id="roleValue">—</div>
-                  <div class="small" id="roleNote"></div>
-                </div>
-                <div class="kpi-box">
-                  <div class="kpi-title">TIP</div>
-                  <div class="small">أضف “إثبات” لكل فجوة (رابط GitHub/شهادة) لرفع قوة ملفك أمام لجنة التحكيم.</div>
-                </div>
+                <div class="kpi-box"><div class="kpi-title">ROLE</div><div style="font-weight:900;font-size:18px;margin-bottom:6px" id="roleValue">—</div><div class="small" id="roleNote"></div></div>
+                <div class="kpi-box"><div class="kpi-title">TIP</div><div class="small">أضف "إثبات" لكل فجوة (رابط GitHub/شهادة) لرفع قوة ملفك.</div></div>
               </div>
-
               <div class="chart-wrap">
                 <div class="chart-container"><canvas id="barChart"></canvas></div>
                 <div class="chart-container"><canvas id="radarChart"></canvas></div>
               </div>
-
-              <div class="panel">
-                <h4>المهارات الناقصة/الضعيفة (مرتبة بالأثر) + إثباتات</h4>
-                <ol class="list" id="missingList"></ol>
-              </div>
-              <div class="panel"><h4>خارطة طريق</h4><div id="roadmap"></div></div>
+              <div class="panel"><h4>المهارات الناقصة/الضعيفة (مرتبة بالأثر)</h4><ol class="list" id="missingList"></ol></div>
+              <div class="panel"><h4>خارطة طريق مخصصة</h4><div id="roadmap"></div></div>
               <div class="panel"><h4>مشاريع بورتفوليو مقترحة</h4><div id="projects"></div></div>
-
-              <div class="actions">
-                <button class="btn btn-primary" id="saveReportBtn">📌 حفظ التقرير والمشاركة</button>
-              </div>
+              <div class="actions"><button class="btn btn-primary" id="saveReportBtn">📌 حفظ التقرير</button></div>
             </section>
 
+            <!-- REPORT -->
             <section id="viewReport" style="display:none">
               <div class="section-head"><h2>التقرير</h2><span class="badge">Report</span></div>
-              <div class="hint">يمكن مشاركة التقرير عبر رابط أو تصديره PDF/JSON. الرابط يعمل على أي جهاز.</div>
-
+              <div class="hint">يمكنك تصدير التقرير كـ PDF أو JSON أو مشاركته عبر رابط.</div>
               <div class="report-summary" id="reportSummary"></div>
               <div class="panel"><h4>البيانات (JSON)</h4><div class="mono" id="reportJson"></div></div>
-
               <div class="actions">
-                <button class="btn btn-primary" id="downloadPdfBtn">⬇️ تصدير PDF تنفيذي</button>
+                <button class="btn btn-primary" id="downloadPdfBtn">⬇️ تصدير PDF</button>
                 <button class="btn btn-ghost" id="downloadJsonBtn">⬇️ JSON</button>
-                <button class="btn btn-soft" id="loadFromLinkBtn">🔎 تحميل من الرابط</button>
+                <button class="btn btn-soft" id="copyLinkBtn">🔗 نسخ رابط المشاركة</button>
               </div>
             </section>
           </div>
 
+          <!-- CHAT ASSISTANT -->
           <aside class="assistant">
-            <div class="dialog-title">سِراج (مستشارك المهني)</div>
+            <div class="dialog-title">💡 سِراج (مستشارك المهني الذكي)</div>
             <div class="dialog" id="dialog"></div>
-
             <div class="quick-actions" id="quickActions">
               <button class="quick-btn" data-q="وش أفضل وظيفة لي؟">أفضل وظيفة لي</button>
               <button class="quick-btn" data-q="وش ناقصني؟">وش ناقصني؟</button>
-              <button class="quick-btn" data-q="أبي أصير Data Analyst">Data Analyst</button>
+              <button class="quick-btn" data-q="أبي نصيحة لتحسين ملفي">نصيحة تحسين</button>
               <button class="quick-btn" data-q="كم أسبوع أحتاج؟">كم أسبوع؟</button>
             </div>
-
             <div class="chat-input-row">
-              <input class="input" id="chatInput" placeholder="اكتب سؤالك…"/>
+              <input class="input" id="chatInput" placeholder="اكتب سؤالك…" autocomplete="off"/>
               <button class="btn btn-primary" id="chatSendBtn">إرسال</button>
             </div>
-
-            <div class="footnote">MVP+ — Smart Share + Saudi Lens + Evidence + Confidence.</div>
+            <div class="footnote">MVP+ — Smart Share + Saudi Lens + Evidence + AI Chat via Make.com</div>
           </aside>
         </div>
-
-      </div> </div>
+      </div>
+    </div>
   </main>
+
+  <!-- Evidence Modal -->
+  <div class="modal-overlay" id="evidenceModal">
+    <div class="modal-box">
+      <h3 id="evidenceModalTitle">إضافة إثبات</h3>
+      <div class="field"><label>رابط الإثبات (GitHub / Drive / شهادة)</label><input class="input" id="evidenceUrl" placeholder="https://github.com/..."/></div>
+      <div class="field"><label>نوع الإثبات</label><select class="select" id="evidenceType"><option value="github">GitHub Repo</option><option value="cert">شهادة</option><option value="project">مشروع</option><option value="other">أخرى</option></select></div>
+      <div class="field"><label>ملاحظة (اختياري)</label><input class="input" id="evidenceNote" placeholder="وصف مختصر..."/></div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" id="evidenceSaveBtn">💾 حفظ</button>
+        <button class="btn btn-ghost" id="evidenceCancelBtn">إلغاء</button>
+      </div>
+    </div>
+  </div>
 
   <div class="toast" id="toast"><div id="toastText">تم</div></div>
 
   <script>
-    (() => {
-      "use strict";
+  (() => {
+    "use strict";
 
-      // ══════════════════════════════════════════════════════════════
-      // CONFIG & API 
-      // ══════════════════════════════════════════════════════════════
-      // 🔴 رابط Make.com: إذا شحنت الرصيد حطه هنا، وإذا تركت الخانة فاضية بيشتغل المحرك المحلي للهاكاثون كـ MVP.
-      const AI_WEBHOOK_URL = "https://hook.eu1.make.com/YOUR_WEBHOOK_HERE"; 
+    // ══════════════════════════════════════════════════════════════
+    // CONFIG — ⚠️ ضع رابط Make.com الحقيقي هنا ⚠️
+    // ══════════════════════════════════════════════════════════════
+    // سيناريو 1: تحليل الجاهزية (يستقبل بيانات المستخدم ويرجع JSON)
+    const ANALYSIS_WEBHOOK = "https://hook.eu1.make.com/YOUR_ANALYSIS_WEBHOOK";
+    // سيناريو 2: الشات الذكي (يستقبل سؤال + سياق ويرجع نص)
+    const CHAT_WEBHOOK    = "https://hook.eu1.make.com/YOUR_CHAT_WEBHOOK";
 
-      const MAX_SKILL_LEVEL = 5;
-      const MIN_SKILL_LEVEL = 1;
-      const CUSTOM_SKILL_PREFIX = "custom:";
-      const STORAGE_KEY_PROFILE = "siraj_profile_v3";
-      const STORAGE_KEY_REPORTS = "siraj_reports_v3";
+    const MAX_SKILL_LEVEL = 5;
+    const MIN_SKILL_LEVEL = 1;
+    const CUSTOM_SKILL_PREFIX = "custom:";
+    const STORAGE_KEY_PROFILE = "siraj_profile_v4";
+    const STORAGE_KEY_REPORTS = "siraj_reports_v4";
 
-      // ═══════════════════════════════════
-      // UTILITIES
-      // ═══════════════════════════════════
-      const $ = (id) => document.getElementById(id);
-      const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
-      const round = (n) => Math.round(n);
-      const nowISO = () => new Date().toISOString();
-      const uid = () => "r_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
-      const escHtml = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+    const $ = id => document.getElementById(id);
+    const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+    const round = n => Math.round(n);
+    const nowISO = () => new Date().toISOString();
+    const uid = () => "r_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
+    const escHtml = s => {
+      const d = document.createElement("div");
+      d.textContent = String(s);
+      return d.innerHTML;
+    };
 
-      const store = {
-        get(k, fb) { try { const v = localStorage.getItem(k); return v !== null ? JSON.parse(v) : fb; } catch { return fb; } },
-        set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+    const store = {
+      get(k, fb) { try { const v = localStorage.getItem(k); return v !== null ? JSON.parse(v) : fb; } catch { return fb; } },
+      set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+    };
+
+    const i18n = { lang: "ar", t(k) { return (STRINGS[this.lang] || STRINGS.ar)[k] || k; } };
+    const STRINGS = {
+      ar: { shareCopied: "تم نسخ الرابط!", fillFirst: "يرجى إكمال التخصص والمهارات أولاً", pickRole: "اختر الوظيفة أولاً", autoPicked: "تم التحديد آلياً", profileSaved: "تم الحفظ", profileReset: "تم التصفير", analysisError: "خطأ بالتحليل", evidenceSaved: "تم حفظ الإثبات", confirmReset: "هل أنت متأكد من تصفير كل البيانات؟" },
+      en: { shareCopied: "Link copied!", fillFirst: "Fill profile first", pickRole: "Pick role first", autoPicked: "Auto-picked", profileSaved: "Saved", profileReset: "Reset", analysisError: "Analysis error", evidenceSaved: "Evidence saved", confirmReset: "Reset all data?" },
+    };
+
+    // ═══════════════════════════════════
+    // SKILLS (30 مهارة)
+    // ═══════════════════════════════════
+    const SKILLS = {
+      sql:{ar:"SQL",en:"SQL"},excel:{ar:"Excel",en:"Excel"},powerbi:{ar:"Power BI",en:"Power BI"},python:{ar:"Python",en:"Python"},
+      statistics:{ar:"الإحصاء",en:"Statistics"},ml:{ar:"تعلم الآلة",en:"Machine Learning"},data_viz:{ar:"تصوير البيانات",en:"Data Visualization"},
+      data_modeling:{ar:"نمذجة البيانات",en:"Data Modeling"},etl:{ar:"ETL",en:"ETL"},cloud:{ar:"الحوسبة السحابية",en:"Cloud"},
+      aws:{ar:"AWS",en:"AWS"},azure:{ar:"Azure",en:"Azure"},gcp:{ar:"GCP",en:"GCP"},cybersecurity:{ar:"الأمن السيبراني",en:"Cybersecurity"},
+      networking:{ar:"الشبكات",en:"Networking"},linux:{ar:"Linux",en:"Linux"},devops:{ar:"DevOps",en:"DevOps"},git:{ar:"Git",en:"Git"},
+      api:{ar:"واجهات API",en:"APIs"},requirements:{ar:"تحليل المتطلبات",en:"Requirements"},process:{ar:"تحسين العمليات",en:"Process Improvement"},
+      stakeholder:{ar:"إدارة أصحاب المصلحة",en:"Stakeholder Mgmt"},communication:{ar:"التواصل",en:"Communication"},presentation:{ar:"العرض والتقديم",en:"Presentation"},
+      product:{ar:"إدارة المنتج",en:"Product Management"},ux:{ar:"تجربة المستخدم UX",en:"UX"},erp:{ar:"ERP",en:"ERP"},sap:{ar:"SAP",en:"SAP"},
+      agile:{ar:"Agile/Scrum",en:"Agile/Scrum"},testing:{ar:"اختبار البرمجيات",en:"Testing"},coding:{ar:"البرمجة",en:"Programming"},
+    };
+
+    // ═══════════════════════════════════
+    // SAUDI MARKET DATA 🇸🇦 (Phase 2.5)
+    // ═══════════════════════════════════
+    const MARKET_DATA = {
+      data_analyst:     { salaryRange: "8,000 – 15,000", demand: "عالي جداً", vision: "برنامج التحول الوطني (الرقمنة)" },
+      data_scientist:   { salaryRange: "12,000 – 25,000", demand: "عالي", vision: "برنامج التحول الوطني" },
+      business_analyst: { salaryRange: "9,000 – 18,000", demand: "عالي", vision: "برنامج تنمية القدرات البشرية" },
+      cyber_analyst:    { salaryRange: "10,000 – 22,000", demand: "عالي جداً", vision: "الاستراتيجية الوطنية للأمن السيبراني" },
+      cloud_engineer:   { salaryRange: "12,000 – 25,000", demand: "عالي", vision: "استراتيجية الحوسبة السحابية" },
+      product_manager:  { salaryRange: "14,000 – 28,000", demand: "متوسط-عالي", vision: "برنامج تنمية القدرات البشرية" },
+      ux_designer:      { salaryRange: "8,000 – 18,000", demand: "متوسط", vision: "برنامج جودة الحياة" },
+      erp_consultant:   { salaryRange: "12,000 – 24,000", demand: "عالي", vision: "برنامج التحول الوطني" },
+      devops_engineer:  { salaryRange: "13,000 – 26,000", demand: "عالي", vision: "استراتيجية الحوسبة السحابية" },
+      software_engineer:{ salaryRange: "10,000 – 22,000", demand: "عالي جداً", vision: "برنامج التحول الوطني" },
+    };
+
+    // ═══════════════════════════════════
+    // LEARNING RESOURCES 📚 (Phase 2.4)
+    // ═══════════════════════════════════
+    const RESOURCES = {
+      sql: [{name:"دورة SQL — منصة سطر",url:"https://satr.codes"},{name:"SQL for Data Science — Coursera",url:"https://coursera.org"}],
+      python: [{name:"دورة بايثون — منصة سطر",url:"https://satr.codes"},{name:"Python for Everybody — Coursera",url:"https://coursera.org"}],
+      excel: [{name:"Excel Skills — Coursera",url:"https://coursera.org"},{name:"تعلم إكسل — رواق",url:"https://rwaq.org"}],
+      powerbi: [{name:"Power BI — Microsoft Learn",url:"https://learn.microsoft.com"},{name:"Power BI — منصة سطر",url:"https://satr.codes"}],
+      statistics: [{name:"الإحصاء — Khan Academy",url:"https://khanacademy.org"},{name:"Statistics with R — Coursera",url:"https://coursera.org"}],
+      ml: [{name:"Machine Learning — Andrew Ng",url:"https://coursera.org"},{name:"تعلم الآلة — منصة سطر",url:"https://satr.codes"}],
+      cybersecurity: [{name:"الأمن السيبراني — سطر",url:"https://satr.codes"},{name:"Google Cybersecurity — Coursera",url:"https://coursera.org"}],
+      cloud: [{name:"AWS Cloud Practitioner",url:"https://aws.amazon.com/training"},{name:"Azure Fundamentals — Microsoft Learn",url:"https://learn.microsoft.com"}],
+      devops: [{name:"DevOps — منصة سطر",url:"https://satr.codes"},{name:"DevOps Engineering — Coursera",url:"https://coursera.org"}],
+      git: [{name:"Git & GitHub — سطر",url:"https://satr.codes"},{name:"Git Tutorial — Atlassian",url:"https://atlassian.com/git"}],
+      requirements: [{name:"Business Analysis — IIBA",url:"https://iiba.org"},{name:"تحليل الأعمال — رواق",url:"https://rwaq.org"}],
+      communication: [{name:"مهارات التواصل — إدراك",url:"https://edraak.org"},{name:"Communication Skills — Coursera",url:"https://coursera.org"}],
+      coding: [{name:"البرمجة — منصة سطر",url:"https://satr.codes"},{name:"CS50 — Harvard",url:"https://cs50.harvard.edu"}],
+      default: [{name:"منصة سطر",url:"https://satr.codes"},{name:"Coursera",url:"https://coursera.org"}],
+    };
+
+    // ═══════════════════════════════════
+    // PORTFOLIO PROJECTS DB 💼 (Phase 2.3)
+    // ═══════════════════════════════════
+    const PROJECTS_DB = {
+      data_analyst: [
+        {title:"لوحة تحليل بيانات سوق العقار السعودي",objective:"بناء Dashboard تفاعلي بـ Power BI يحلل أسعار العقار في 5 مدن سعودية",skills:["powerbi","sql","data_viz"],deliverables:["Dashboard تفاعلي","تقرير PDF","كود SQL"]},
+        {title:"تحليل بيانات التوظيف من منصة جدارات",objective:"تحليل أنماط التوظيف والمهارات المطلوبة في السوق السعودي",skills:["excel","statistics","data_viz"],deliverables:["تقرير تحليلي","رسوم بيانية","توصيات"]},
+        {title:"مقارنة أداء القطاعات في تداول",objective:"تحليل بيانات سوق الأسهم السعودي وتحديد القطاعات الأعلى نمواً",skills:["sql","excel","powerbi"],deliverables:["Dashboard","تقرير مقارنة"]},
+      ],
+      data_scientist: [
+        {title:"نموذج تنبؤ أسعار العقار في الرياض",objective:"بناء ML Model يتنبأ بأسعار العقارات باستخدام بيانات حقيقية",skills:["python","ml","statistics"],deliverables:["Notebook","Model","تقرير"]},
+        {title:"تحليل المشاعر للتغريدات السعودية",objective:"NLP Model يحلل آراء المستخدمين السعوديين على تويتر",skills:["python","ml","etl"],deliverables:["API","Dashboard","تقرير"]},
+      ],
+      business_analyst: [
+        {title:"تحسين عملية التوظيف في جهة حكومية",objective:"توثيق العمليات الحالية واقتراح تحسينات باستخدام BPMN",skills:["requirements","process","stakeholder"],deliverables:["Process Map","تقرير التحسين","خطة التنفيذ"]},
+        {title:"تحليل متطلبات نظام حجز مواعيد",objective:"جمع وتوثيق المتطلبات لنظام حجز مواعيد رقمي",skills:["requirements","communication","agile"],deliverables:["SRS Document","User Stories","Wireframes"]},
+      ],
+      cyber_analyst: [
+        {title:"محاكاة SOC وتحليل حوادث أمنية",objective:"بناء بيئة SOC مصغرة وتحليل سيناريوهات هجوم حقيقية",skills:["cybersecurity","networking","linux"],deliverables:["تقرير الحوادث","Playbook","Dashboard"]},
+      ],
+      cloud_engineer: [
+        {title:"بناء بنية سحابية آمنة على AWS",objective:"تصميم وتنفيذ بنية 3-tier على AWS مع أمان متكامل",skills:["cloud","aws","devops"],deliverables:["Architecture Diagram","IaC Code","تقرير الأمان"]},
+      ],
+      product_manager: [
+        {title:"تصميم منتج رقمي لخدمة التوصيل السعودية",objective:"بناء PRD كامل مع user research وpriorization framework",skills:["product","stakeholder","agile"],deliverables:["PRD","Roadmap","Wireframes"]},
+      ],
+      ux_designer: [
+        {title:"إعادة تصميم تجربة تطبيق حكومي",objective:"بحث مستخدم + تصميم واجهات محسّنة لتطبيق خدمات حكومية",skills:["ux","communication","presentation"],deliverables:["Research Report","Wireframes","Prototype"]},
+      ],
+      erp_consultant: [
+        {title:"توثيق عمليات شركة تجزئة على SAP",objective:"رسم العمليات الحالية ومطابقتها مع SAP Best Practices",skills:["erp","process","requirements"],deliverables:["Process Map","Gap Analysis","خطة التنفيذ"]},
+      ],
+      devops_engineer: [
+        {title:"بناء CI/CD Pipeline كامل",objective:"أتمتة النشر باستخدام GitHub Actions + Docker + AWS",skills:["devops","git","cloud"],deliverables:["Pipeline Config","Documentation","Monitoring Dashboard"]},
+      ],
+      software_engineer: [
+        {title:"بناء API لنظام إدارة المهام",objective:"تطوير RESTful API باستخدام Python/Node.js مع اختبارات",skills:["coding","api","testing"],deliverables:["API Code","Tests","Documentation"]},
+      ],
+    };
+
+    // ═══════════════════════════════════
+    // ROLES (10 وظائف)
+    // ═══════════════════════════════════
+    const ROLES = [
+      {id:"data_analyst",ar:"محلل بيانات",en:"Data Analyst",descAr:"تحليل البيانات وبناء لوحات وقراءات تنفيذية.",tools:["sql","excel","powerbi"],required:[{skill:"sql",level:4,weight:10},{skill:"excel",level:4,weight:7},{skill:"powerbi",level:4,weight:9},{skill:"statistics",level:3,weight:6},{skill:"data_viz",level:4,weight:6},{skill:"communication",level:3,weight:5},{skill:"presentation",level:3,weight:4}],optional:[{skill:"python",level:2,weight:3},{skill:"data_modeling",level:2,weight:3}],certBonus:["google data analytics","ibm data analyst"]},
+      {id:"data_scientist",ar:"عالم بيانات",en:"Data Scientist",descAr:"نمذجة تنبؤية وتحليلات متقدمة.",tools:["python","sql","git"],required:[{skill:"python",level:4,weight:10},{skill:"statistics",level:4,weight:9},{skill:"ml",level:4,weight:10},{skill:"sql",level:3,weight:6},{skill:"etl",level:3,weight:6},{skill:"git",level:3,weight:4},{skill:"communication",level:3,weight:5}],optional:[{skill:"cloud",level:2,weight:4},{skill:"api",level:2,weight:3}],certBonus:["ibm data science","google advanced data analytics"]},
+      {id:"business_analyst",ar:"محلل أعمال",en:"Business Analyst",descAr:"تحليل متطلبات وربط التقنية بالعمل.",tools:["excel","agile"],required:[{skill:"requirements",level:4,weight:10},{skill:"process",level:4,weight:8},{skill:"stakeholder",level:4,weight:8},{skill:"communication",level:4,weight:8},{skill:"presentation",level:3,weight:5},{skill:"agile",level:3,weight:5},{skill:"excel",level:3,weight:4}],optional:[{skill:"sql",level:2,weight:3}],certBonus:["cbap","pmi-pba"]},
+      {id:"cyber_analyst",ar:"محلل أمن سيبراني",en:"Cyber Analyst",descAr:"مراقبة التهديدات، SOC، وتحليل الحوادث.",tools:["linux","networking"],required:[{skill:"cybersecurity",level:4,weight:10},{skill:"networking",level:4,weight:8},{skill:"linux",level:3,weight:6},{skill:"communication",level:3,weight:5},{skill:"process",level:3,weight:4}],optional:[{skill:"cloud",level:2,weight:4}],certBonus:["comptia security+","ceh","cysa+"]},
+      {id:"cloud_engineer",ar:"مهندس سحابة",en:"Cloud Engineer",descAr:"بناء وتشغيل البنية السحابية والأمان.",tools:["aws","azure","linux"],required:[{skill:"cloud",level:4,weight:10},{skill:"linux",level:3,weight:6},{skill:"networking",level:3,weight:6},{skill:"devops",level:3,weight:6},{skill:"git",level:3,weight:4},{skill:"cybersecurity",level:3,weight:5}],optional:[{skill:"aws",level:3,weight:4},{skill:"azure",level:3,weight:4}],certBonus:["aws ccp","aws saa","az-900"]},
+      {id:"product_manager",ar:"مدير منتج",en:"Product Manager",descAr:"تعريف الرؤية والأولويات وقيادة التنفيذ.",tools:["agile","data_viz"],required:[{skill:"product",level:4,weight:10},{skill:"stakeholder",level:4,weight:8},{skill:"communication",level:4,weight:8},{skill:"presentation",level:4,weight:7},{skill:"process",level:3,weight:5},{skill:"agile",level:3,weight:5}],optional:[{skill:"data_viz",level:2,weight:3}],certBonus:["pspo","product school"]},
+      {id:"ux_designer",ar:"مصمم UX",en:"UX Designer",descAr:"بحث مستخدم + تصميم تدفقات + نماذج.",tools:["ux"],required:[{skill:"ux",level:4,weight:10},{skill:"communication",level:4,weight:7},{skill:"presentation",level:3,weight:5},{skill:"process",level:3,weight:4}],optional:[{skill:"product",level:2,weight:3}],certBonus:["google ux design"]},
+      {id:"erp_consultant",ar:"استشاري ERP",en:"ERP Consultant",descAr:"تطبيق ERP وربط العمليات والمتطلبات.",tools:["erp","sap"],required:[{skill:"erp",level:4,weight:10},{skill:"process",level:4,weight:8},{skill:"requirements",level:4,weight:8},{skill:"communication",level:4,weight:7},{skill:"stakeholder",level:3,weight:5}],optional:[{skill:"sap",level:3,weight:4}],certBonus:["sap certified"]},
+      {id:"devops_engineer",ar:"مهندس DevOps",en:"DevOps Engineer",descAr:"CI/CD، أتمتة، تشغيل، مراقبة.",tools:["devops","linux","git"],required:[{skill:"devops",level:4,weight:10},{skill:"linux",level:4,weight:7},{skill:"git",level:4,weight:6},{skill:"cloud",level:3,weight:6},{skill:"networking",level:3,weight:5},{skill:"cybersecurity",level:3,weight:4}],optional:[{skill:"api",level:2,weight:3}],certBonus:["aws devops","docker certified"]},
+      {id:"software_engineer",ar:"مهندس برمجيات",en:"Software Engineer",descAr:"تطوير منتجات برمجية، هندسة، اختبار.",tools:["git","api","testing"],required:[{skill:"coding",level:4,weight:10},{skill:"git",level:3,weight:6},{skill:"api",level:3,weight:6},{skill:"testing",level:3,weight:6},{skill:"communication",level:3,weight:4}],optional:[{skill:"cloud",level:2,weight:3}],certBonus:["aws developer","meta backend"]},
+    ];
+
+    // ═══════════════════════════════════
+    // SMART SKILL RECOGNITION (Aliases + Fuzzy)
+    // ═══════════════════════════════════
+    const SKILL_ALIASES = {
+      sql: ["sql","إس كيو إل","قواعد بيانات","قواعد البيانات","database","databases","mysql","postgresql","postgres","oracle db","mariadb","tsql","plsql","استعلامات"],
+      excel: ["excel","إكسل","اكسل","جداول","spreadsheet","spreadsheets","مايكروسوفت إكسل","microsoft excel","جداول البيانات","google sheets","جوجل شيت"],
+      powerbi: ["power bi","powerbi","بور بي آي","بوربي آي","بوربي","لوحات المعلومات","dashboard","داشبورد","tableau","تابلو","لوكر","looker","qlik"],
+      python: ["python","بايثون","بيثون","باثون"],
+      statistics: ["statistics","إحصاء","الإحصاء","احصاء","الاحصاء","إحصائيات","تحليل إحصائي","spss","stata","r language","لغة r"],
+      ml: ["machine learning","تعلم آلة","تعلم الآلة","تعلم الالة","ذكاء اصطناعي","الذكاء الاصطناعي","ai","artificial intelligence","deep learning","تعلم عميق","neural network","شبكات عصبية","nlp","معالجة لغة طبيعية"],
+      data_viz: ["data visualization","تصوير البيانات","تصوير بيانات","تحليل بيانات","تحليل البيانات","data analysis","data analytics","رسوم بيانية","مرئيات البيانات","visualization"],
+      data_modeling: ["data modeling","نمذجة بيانات","نمذجة البيانات","data model","er diagram","مخططات البيانات","تصميم قواعد البيانات"],
+      etl: ["etl","extract transform load","تكامل البيانات","data pipeline","data integration","data warehouse","مستودع بيانات","airflow","informatica"],
+      cloud: ["cloud","سحابة","الحوسبة السحابية","حوسبة سحابية","cloud computing","البنية السحابية"],
+      aws: ["aws","amazon web services","أمازون","امازون"],
+      azure: ["azure","أزور","مايكروسوفت أزور","microsoft azure"],
+      gcp: ["gcp","google cloud","جوجل كلاود","google cloud platform"],
+      cybersecurity: ["cybersecurity","أمن سيبراني","الأمن السيبراني","امن سيبراني","الامن السيبراني","أمن المعلومات","امن المعلومات","information security","infosec","soc","penetration testing","اختبار اختراق","ethical hacking"],
+      networking: ["networking","شبكات","الشبكات","network","ccna","ccnp","tcp/ip","بروتوكولات"],
+      linux: ["linux","لينكس","ubuntu","أوبنتو","centos","redhat","ريد هات","unix","يونكس","bash","شل"],
+      devops: ["devops","ديف أوبس","ديفوبس","ci/cd","cicd","docker","دوكر","kubernetes","k8s","كوبرنتس","terraform","ansible","jenkins","جنكنز","infrastructure as code"],
+      git: ["git","جت","جيت","github","جت هب","جيتهب","gitlab","جتلاب","version control","التحكم بالإصدارات","إدارة النسخ"],
+      api: ["api","apis","واجهات api","واجهات برمجية","واجهة برمجية","rest","restful","graphql","endpoint","microservices","خدمات مصغرة"],
+      requirements: ["requirements","تحليل متطلبات","تحليل المتطلبات","جمع المتطلبات","requirements analysis","requirements gathering","business requirements","متطلبات الأعمال","brd","srs","user stories","قصص المستخدم"],
+      process: ["process improvement","تحسين عمليات","تحسين العمليات","bpmn","business process","lean","six sigma","سكس سيجما","إدارة العمليات","ادارة العمليات","عمليات"],
+      stakeholder: ["stakeholder","أصحاب المصلحة","اصحاب المصلحة","إدارة أصحاب المصلحة","stakeholder management","علاقات العملاء","إدارة العلاقات"],
+      communication: ["communication","تواصل","التواصل","مهارات التواصل","مهارات تواصل","اتصال","soft skills","مهارات ناعمة"],
+      presentation: ["presentation","عرض","تقديم","العرض والتقديم","عرض وتقديم","presentations","public speaking","التحدث أمام الجمهور"],
+      product: ["product management","إدارة منتج","إدارة المنتج","ادارة منتج","ادارة المنتج","product owner","مالك المنتج","product strategy","roadmap"],
+      ux: ["ux","ui","ui/ux","ux/ui","تجربة مستخدم","تجربة المستخدم","واجهة مستخدم","واجهات مستخدم","user experience","user interface","تصميم تفاعلي","figma","فيجما","adobe xd","sketch","wireframe","prototype","نموذج أولي"],
+      erp: ["erp","تخطيط موارد المؤسسة","تخطيط موارد","enterprise resource planning","نظام موارد"],
+      sap: ["sap","ساب","إس أي بي","sap hana","sap s/4hana","sap mm","sap fi","sap sd"],
+      agile: ["agile","أجايل","اجايل","scrum","سكرم","kanban","كانبان","sprint","سبرنت","المنهجيات الرشيقة","منهجيات رشيقة","jira","جيرا"],
+      testing: ["testing","اختبار","اختبار برمجيات","اختبار البرمجيات","qa","quality assurance","ضمان الجودة","test automation","أتمتة الاختبار","selenium","manual testing","اختبار يدوي"],
+      coding: ["coding","programming","برمجة","البرمجة","تطوير برمجيات","تطوير","software development","javascript","جافاسكربت","java","جافا","c++","سي++","c#","react","node","nodejs","php","swift","kotlin","flutter","html","css","frontend","backend","full stack","فل ستاك"],
+    };
+
+    function normalizeSkillName(raw) {
+      const s = String(raw||"").trim().toLowerCase().replace(/[^\p{L}\p{N}\s\/.\-+#]/gu," ").replace(/\s+/g," ").trim();
+      if(!s) return null;
+      // 1) Exact match on SKILLS ar/en
+      for(const [k,m] of Object.entries(SKILLS)) { if(s===m.ar.toLowerCase()||s===m.en.toLowerCase()) return k; }
+      // 2) Alias match (partial includes)
+      for(const [k,aliases] of Object.entries(SKILL_ALIASES)) {
+        for(const alias of aliases) {
+          if(s===alias || s.includes(alias) || alias.includes(s)) return k;
+        }
+      }
+      // 3) Unknown skill → still stored for display but won't affect core scoring
+      return CUSTOM_SKILL_PREFIX + s.slice(0,40);
+    }
+
+    function skillLabel(k) { if(k.startsWith(CUSTOM_SKILL_PREFIX)) return k.replace(CUSTOM_SKILL_PREFIX,""); const m=SKILLS[k]; return m?(i18n.lang==="ar"?m.ar:m.en):k; }
+
+    // ═══════════════════════════════════
+    // STATE
+    // ═══════════════════════════════════
+    const state = {
+      tab:"profile", selectedRoleId:null, completedSteps:new Set(), currentEvidenceSkill:null,
+      profile:{ major:"",eduLevel:"UNI",experienceYears:0,prefs:"balanced",sector:"quasi",certs:[],tools:[],skills:[],evidence:{} },
+      analysis:null, reportId:null, lastReport:null,
+    };
+
+    const dom = {};
+    function cacheDom() {
+      dom.tabs=document.querySelectorAll(".tab"); dom.steps=document.querySelectorAll(".step");
+      dom.views={profile:$("viewProfile"),roles:$("viewRoles"),analysis:$("viewAnalysis"),report:$("viewReport")};
+      dom.major=$("major"); dom.eduLevel=$("eduLevel"); dom.experienceYears=$("experienceYears"); dom.prefs=$("prefs"); dom.sector=$("sector"); dom.certs=$("certs"); dom.tools=$("tools");
+      dom.skillName=$("skillName"); dom.skillLevel=$("skillLevel"); dom.skillsBody=$("skillsBody"); dom.skillTable=$("skillTable"); dom.skillsEmpty=$("skillsEmpty");
+      dom.rolesGrid=$("rolesGrid"); dom.scoreValue=$("scoreValue"); dom.scoreBar=$("scoreBar"); dom.roleValue=$("roleValue"); dom.roleNote=$("roleNote");
+      dom.confidenceValue=$("confidenceValue"); dom.confidenceBar=$("confidenceBar"); dom.confidenceNote=$("confidenceNote");
+      dom.missingList=$("missingList"); dom.roadmap=$("roadmap"); dom.projects=$("projects"); dom.barChart=$("barChart"); dom.radarChart=$("radarChart");
+      dom.reportSummary=$("reportSummary"); dom.reportJson=$("reportJson"); dom.dialog=$("dialog"); dom.chatInput=$("chatInput"); dom.toast=$("toast"); dom.toastText=$("toastText");
+      dom.estimateBadge=$("estimateBadge"); dom.estimateText=$("estimateText"); dom.comparePanel=$("comparePanel"); dom.compareResult=$("compareResult"); dom.compare1=$("compare1"); dom.compare2=$("compare2");
+    }
+
+    let toastTimer;
+    function toast(t) { dom.toastText.textContent=t; dom.toast.classList.add("show"); clearTimeout(toastTimer); const dur=t.length>30?3500:2000; toastTimer=setTimeout(()=>dom.toast.classList.remove("show"),dur); }
+
+    // ═══════════════════════════════════
+    // TAB/STEP NAVIGATION
+    // ═══════════════════════════════════
+    function setTab(tab) {
+      state.tab=tab;
+      dom.tabs.forEach(t=>{ t.classList.toggle("active",t.dataset.tab===tab); });
+      Object.entries(dom.views).forEach(([k,el])=>{ el.style.display=k===tab?"block":"none"; });
+      const order=["profile","roles","analysis","report"]; const idx=order.indexOf(tab);
+      dom.steps.forEach((s,i)=>{ s.classList.toggle("active",i===idx); s.classList.toggle("done",state.completedSteps.has(order[i])&&i!==idx); });
+      if(tab==="analysis"&&state.analysis) {
+        requestAnimationFrame(()=>setTimeout(()=>{ drawBarChart(dom.barChart,state.analysis.res.charts); drawRadarChart(dom.radarChart,state.analysis.res.charts); },80));
+      }
+    }
+
+    // ═══════════════════════════════════
+    // PROFILE CRUD
+    // ═══════════════════════════════════
+    function profileFromInputs() {
+      state.profile.major=dom.major.value.trim(); state.profile.eduLevel=dom.eduLevel.value;
+      state.profile.experienceYears=clamp(Number(dom.experienceYears.value||0),0,50);
+      state.profile.prefs=dom.prefs.value; state.profile.sector=dom.sector.value||"quasi";
+      state.profile.certs=dom.certs.value.split(",").map(s=>s.trim()).filter(Boolean);
+      state.profile.tools=dom.tools.value.split(",").map(s=>s.trim()).filter(Boolean);
+    }
+    function loadProfileToInputs() {
+      dom.major.value=state.profile.major||""; dom.eduLevel.value=state.profile.eduLevel||"UNI";
+      dom.experienceYears.value=String(state.profile.experienceYears||0); dom.prefs.value=state.profile.prefs||"balanced";
+      dom.sector.value=state.profile.sector||"quasi"; dom.certs.value=(state.profile.certs||[]).join(", "); dom.tools.value=(state.profile.tools||[]).join(", ");
+    }
+    function validateProfile() {
+      profileFromInputs(); let valid=true;
+      if(state.profile.major.length<2) { $("fieldMajor").classList.add("has-error"); valid=false; } else { $("fieldMajor").classList.remove("has-error"); }
+      if((state.profile.skills||[]).length===0) valid=false;
+      return valid;
+    }
+    function saveProfile() { profileFromInputs(); store.set(STORAGE_KEY_PROFILE,state.profile); state.completedSteps.add("profile"); toast(i18n.t("profileSaved")); }
+    function loadProfile() { const p=store.get(STORAGE_KEY_PROFILE,null); if(p) state.profile={...state.profile,...p,evidence:p.evidence||{}}; loadProfileToInputs(); renderSkillsTable(); }
+    function resetProfile() {
+      if(!confirm(i18n.t("confirmReset"))) return;
+      state.profile={major:"",eduLevel:"UNI",experienceYears:0,prefs:"balanced",sector:"quasi",certs:[],tools:[],skills:[],evidence:{}};
+      loadProfileToInputs(); renderSkillsTable(); store.set(STORAGE_KEY_PROFILE,state.profile); toast(i18n.t("profileReset"));
+    }
+
+    // ═══════════════════════════════════
+    // SKILLS MANAGEMENT
+    // ═══════════════════════════════════
+    function addSkill(raw,level) {
+      const key=normalizeSkillName(raw);
+      if(!key||String(raw||"").trim().length<2) { toast("اسم المهارة غير صالح"); return; }
+      const lvl=clamp(Number(level||3),MIN_SKILL_LEVEL,MAX_SKILL_LEVEL);
+      const idx=state.profile.skills.findIndex(s=>s.key===key);
+      if(idx>=0) { state.profile.skills[idx].level=Math.max(state.profile.skills[idx].level,lvl); state.profile.skills[idx].raw=raw; }
+      else { state.profile.skills.push({raw:raw.trim(),key,level:lvl}); }
+
+      // Warn if unrecognized
+      if(key.startsWith(CUSTOM_SKILL_PREFIX)) {
+        const suggestion = findClosestSkill(raw.trim().toLowerCase());
+        if(suggestion) {
+          toast(`⚠️ "${raw}" غير معروفة — هل تقصد "${suggestion}"؟`);
+        } else {
+          toast(`⚠️ "${raw}" غير معروفة ولن تؤثر على التحليل. جرب اسم آخر.`);
+        }
+      }
+
+      renderSkillsTable(); store.set(STORAGE_KEY_PROFILE,state.profile);
+    }
+
+    // Simple closest skill finder
+    function findClosestSkill(input) {
+      let bestMatch = null, bestScore = 0;
+      for(const [key, aliases] of Object.entries(SKILL_ALIASES)) {
+        for(const alias of aliases) {
+          // Check if any words overlap
+          const inputWords = input.split(/\s+/);
+          const aliasWords = alias.split(/\s+/);
+          let overlap = 0;
+          for(const w of inputWords) { if(w.length>2 && aliasWords.some(aw=>aw.includes(w)||w.includes(aw))) overlap++; }
+          if(overlap > bestScore) { bestScore = overlap; bestMatch = SKILLS[key] ? (i18n.lang==="ar"?SKILLS[key].ar:SKILLS[key].en) : key; }
+        }
+      }
+      return bestScore > 0 ? bestMatch : null;
+    }
+    function removeSkill(key) { state.profile.skills=state.profile.skills.filter(s=>s.key!==key); if(state.profile.evidence?.[key]) delete state.profile.evidence[key]; renderSkillsTable(); store.set(STORAGE_KEY_PROFILE,state.profile); }
+    function setSkillLevel(key,level) { const s=state.profile.skills.find(x=>x.key===key); if(s) s.level=clamp(Number(level),MIN_SKILL_LEVEL,MAX_SKILL_LEVEL); store.set(STORAGE_KEY_PROFILE,state.profile); }
+
+    function renderSkillsTable() {
+      const tb=dom.skillsBody; tb.innerHTML="";
+      const sk=[...(state.profile.skills||[])].sort((a,b)=>skillLabel(a.key).localeCompare(skillLabel(b.key)));
+      dom.skillTable.style.display=sk.length?"table":"none"; dom.skillsEmpty.style.display=sk.length?"none":"block";
+      for(const s of sk) {
+        const tr=document.createElement("tr");
+        const tdN=document.createElement("td"); const pill=document.createElement("span"); pill.className="pill"; pill.textContent=s.raw||skillLabel(s.key); tdN.appendChild(pill);
+        const tdNorm=document.createElement("td"); tdNorm.style.cssText="color:var(--muted);font-size:12px";
+        if(s.key.startsWith(CUSTOM_SKILL_PREFIX)) {
+          tdNorm.innerHTML=`<span style="color:var(--warn);font-size:10px" title="المهارة غير معروفة — حاول كتابتها بطريقة مختلفة">⚠️ غير معروفة</span>`;
+        } else {
+          tdNorm.textContent=skillLabel(s.key);
+        }
+        const tdL=document.createElement("td"); const rng=document.createElement("input"); rng.type="range"; rng.min=String(MIN_SKILL_LEVEL); rng.max=String(MAX_SKILL_LEVEL); rng.value=String(s.level);
+        const sp=document.createElement("span"); sp.style.cssText="font-weight:800;margin-inline-start:8px"; sp.textContent=String(s.level);
+        rng.addEventListener("input",()=>{ sp.textContent=rng.value; setSkillLevel(s.key,rng.value); });
+        tdL.appendChild(rng); tdL.appendChild(sp);
+        const tdR=document.createElement("td"); const xBtn=document.createElement("span"); xBtn.className="x"; xBtn.textContent="✕"; xBtn.addEventListener("click",()=>removeSkill(s.key)); tdR.appendChild(xBtn);
+        tr.append(tdN,tdNorm,tdL,tdR); tb.appendChild(tr);
+      }
+    }
+
+    // ═══════════════════════════════════
+    // ROLES RENDERING (with Market Data)
+    // ═══════════════════════════════════
+    function renderRoles() {
+      dom.rolesGrid.innerHTML="";
+      for(const r of ROLES) {
+        const mkt=MARKET_DATA[r.id]||{};
+        const div=document.createElement("div");
+        div.className="role-card"+(state.selectedRoleId===r.id?" active":"");
+        div.innerHTML=`<h3>${escHtml(r.ar)}</h3><div class="desc">${escHtml(r.descAr)}</div>`+
+          `<div class="role-meta">${(r.tools||[]).slice(0,4).map(k=>`<span class="tag">${escHtml(skillLabel(k))}</span>`).join("")}</div>`+
+          (mkt.salaryRange?`<div class="market-info"><span>💰 ${escHtml(mkt.salaryRange)} ر.س/شهر · 📊 الطلب: ${escHtml(mkt.demand)}</span></div>`:"");
+        div.addEventListener("click",()=>{ state.selectedRoleId=r.id; renderRoles(); saySiraj("siraj",`اخترت: ${r.ar}. اضغط "حلّل الجاهزية".`); });
+        dom.rolesGrid.appendChild(div);
+      }
+      [dom.compare1,dom.compare2].forEach((sel,si)=>{ sel.innerHTML=""; ROLES.forEach((r,i)=>{ const o=document.createElement("option"); o.value=r.id; o.textContent=r.ar; if(si===1&&i===1) o.selected=true; sel.appendChild(o); }); });
+    }
+
+    function autoPickBestRole() {
+      if(!validateProfile()) { toast(i18n.t("fillFirst")); return; }
+      const scores=ROLES.map(r=>({id:r.id,score:analyzeFallback(state.profile,r).score})).sort((a,b)=>b.score-a.score);
+      state.selectedRoleId=scores[0]?.id||ROLES[0].id; renderRoles(); toast(i18n.t("autoPicked"));
+    }
+
+    // ═══════════════════════════════════
+    // SCORING ENGINE (Local AI + Phase 1.5/1.6)
+    // ═══════════════════════════════════
+    function sectorWeightMult(sector,roleId,skillKey) {
+      let m=1;
+      if(sector==="gov"&&["requirements","process","stakeholder","communication"].includes(skillKey)) m*=1.25;
+      if(sector==="private"&&["coding","devops","cloud","api"].includes(skillKey)) m*=1.2;
+      if(sector==="quasi"&&["communication","stakeholder","process"].includes(skillKey)) m*=1.1;
+      return m;
+    }
+
+    // ═══════════════════════════════════
+    // CERT ALIASES (Smart Matching)
+    // ═══════════════════════════════════
+    const CERT_ALIASES = {
+      "google data analytics": ["google data analytics","شهادة قوقل لتحليل البيانات","شهادة جوجل تحليل بيانات","google data","تحليل بيانات قوقل","تحليل بيانات جوجل","gda"],
+      "ibm data analyst": ["ibm data analyst","ibm data","شهادة ibm","آي بي إم"],
+      "ibm data science": ["ibm data science","ibm علم بيانات"],
+      "google advanced data analytics": ["google advanced data","تحليل بيانات متقدم قوقل"],
+      "cbap": ["cbap","شهادة محلل أعمال","certified business analysis"],
+      "pmi-pba": ["pmi-pba","pmi pba","pba"],
+      "comptia security+": ["comptia security","security+","سكيورتي بلس","comptia sec+","sec+"],
+      "ceh": ["ceh","certified ethical hacker","هاكر أخلاقي"],
+      "cysa+": ["cysa+","cysa","comptia cysa"],
+      "aws ccp": ["aws ccp","aws cloud practitioner","aws certified cloud practitioner","كلاود براكتشنر","cloud practitioner"],
+      "aws saa": ["aws saa","aws solutions architect","aws certified solutions architect","سولوشن أركتكت"],
+      "aws developer": ["aws developer","aws certified developer","مطور aws"],
+      "aws devops": ["aws devops","aws certified devops"],
+      "az-900": ["az-900","az900","azure fundamentals","أزور أساسيات"],
+      "pspo": ["pspo","professional scrum product owner","سكرم برودكت أونر"],
+      "product school": ["product school","مدرسة المنتج"],
+      "google ux design": ["google ux","google ux design","تصميم ux قوقل","شهادة قوقل ux","google تجربة مستخدم"],
+      "sap certified": ["sap certified","sap","شهادة ساب","ساب معتمد"],
+      "docker certified": ["docker certified","docker","دوكر","dca"],
+      "meta backend": ["meta backend","meta","ميتا باك إند"],
+      "pmp": ["pmp","project management professional","إدارة مشاريع احترافية","شهادة إدارة مشاريع"],
+      "scrum master": ["csm","scrum master","سكرم ماستر","psm"],
+    };
+
+    // Generic cert categories (if no exact match, check category)
+    const CERT_CATEGORIES = {
+      data: {keywords:["data","بيانات","analytics","تحليل"],roles:["data_analyst","data_scientist","business_analyst"]},
+      cloud: {keywords:["cloud","aws","azure","gcp","سحابة","كلاود"],roles:["cloud_engineer","devops_engineer"]},
+      security: {keywords:["security","أمن","سيبراني","cyber","hack","اختراق","soc"],roles:["cyber_analyst"]},
+      dev: {keywords:["developer","مطور","programming","برمجة","full stack","backend","frontend","web"],roles:["software_engineer","devops_engineer"]},
+      pm: {keywords:["product","منتج","project","مشروع","agile","scrum"],roles:["product_manager","business_analyst"]},
+      ux: {keywords:["ux","ui","design","تصميم","تجربة مستخدم"],roles:["ux_designer"]},
+      erp: {keywords:["erp","sap","ساب","oracle","أوراكل"],roles:["erp_consultant"]},
+    };
+
+    function calcCertBonus(profile, role) {
+      const userCerts = (profile.certs || []).map(c => c.toLowerCase().trim()).filter(Boolean);
+      const roleCerts = (role.certBonus || []);
+      if (!userCerts.length) return 0;
+
+      let bonus = 0;
+      const matched = new Set();
+
+      // 1) Exact/alias match against role-specific certs
+      for (const rc of roleCerts) {
+        const aliases = CERT_ALIASES[rc] || [rc];
+        for (const uc of userCerts) {
+          if (matched.has(uc)) continue;
+          const found = aliases.some(alias => uc.includes(alias) || alias.includes(uc));
+          if (found) { bonus += 5; matched.add(uc); break; }
+        }
+      }
+
+      // 2) Category match for unmatched certs (generic bonus)
+      for (const uc of userCerts) {
+        if (matched.has(uc)) continue;
+        for (const [, cat] of Object.entries(CERT_CATEGORIES)) {
+          if (cat.roles.includes(role.id) && cat.keywords.some(kw => uc.includes(kw))) {
+            bonus += 2; matched.add(uc); break;
+          }
+        }
+      }
+
+      // 3) Any remaining cert = small generic bonus (effort recognition)
+      const unmatchedCount = userCerts.length - matched.size;
+      if (unmatchedCount > 0) bonus += Math.min(3, unmatchedCount);
+
+      return Math.min(15, bonus);
+    }
+
+    // ═══════════════════════════════════
+    // TOOL → SKILL MAPPING (New!)
+    // ═══════════════════════════════════
+    const TOOL_SKILL_MAP = {
+      "power bi": "powerbi", "powerbi": "powerbi", "بور بي آي": "powerbi", "بوربي": "powerbi",
+      "tableau": "powerbi", "تابلو": "powerbi", "looker": "powerbi", "لوكر": "powerbi",
+      "excel": "excel", "إكسل": "excel", "اكسل": "excel", "google sheets": "excel", "جوجل شيت": "excel",
+      "python": "python", "بايثون": "python", "jupyter": "python", "jupyter notebook": "python", "anaconda": "python",
+      "sql": "sql", "mysql": "sql", "postgresql": "sql", "oracle": "sql", "mongodb": "sql",
+      "git": "git", "github": "git", "جت هب": "git", "gitlab": "git", "bitbucket": "git",
+      "jira": "agile", "جيرا": "agile", "trello": "agile", "asana": "agile", "monday": "agile",
+      "figma": "ux", "فيجما": "ux", "adobe xd": "ux", "sketch": "ux", "invision": "ux",
+      "docker": "devops", "دوكر": "devops", "kubernetes": "devops", "k8s": "devops", "jenkins": "devops", "terraform": "devops", "ansible": "devops",
+      "aws": "aws", "azure": "azure", "gcp": "gcp",
+      "linux": "linux", "لينكس": "linux", "ubuntu": "linux",
+      "sap": "sap", "ساب": "sap",
+      "vs code": "coding", "vscode": "coding", "visual studio": "coding", "intellij": "coding",
+      "postman": "api", "بوستمان": "api", "swagger": "api",
+      "selenium": "testing", "cypress": "testing", "jest": "testing",
+      "spss": "statistics", "stata": "statistics", "r studio": "statistics", "rstudio": "statistics",
+      "wireshark": "networking", "nmap": "cybersecurity", "burp suite": "cybersecurity", "metasploit": "cybersecurity",
+    };
+
+    function calcToolBonus(profile, role) {
+      const userTools = (profile.tools || []).map(t => t.toLowerCase().trim()).filter(Boolean);
+      if (!userTools.length) return 0;
+
+      const requiredSkills = new Set((role.required || []).map(r => r.skill));
+      let bonus = 0;
+      const counted = new Set();
+
+      for (const tool of userTools) {
+        // Try exact match
+        let mappedSkill = TOOL_SKILL_MAP[tool];
+        // Try partial match
+        if (!mappedSkill) {
+          for (const [key, skill] of Object.entries(TOOL_SKILL_MAP)) {
+            if (tool.includes(key) || key.includes(tool)) { mappedSkill = skill; break; }
+          }
+        }
+        if (mappedSkill && !counted.has(mappedSkill)) {
+          counted.add(mappedSkill);
+          if (requiredSkills.has(mappedSkill)) bonus += 2;  // Relevant tool
+          else bonus += 0.5;  // Generic tool
+        }
+      }
+      return Math.min(8, round(bonus));
+    }
+
+    function analyzeFallback(profile,role) {
+      const map=new Map();
+      for(const s of profile.skills||[]) { if(s.key) map.set(s.key,Math.max(map.get(s.key)||0,clamp(Number(s.level||1),1,5))); }
+
+      const required=role.required||[];
+      const reqWeights=required.map(x=>(x.weight||0)*sectorWeightMult(profile.sector||"quasi",role.id,x.skill));
+      const totalReqWeight=reqWeights.reduce((a,x)=>a+x,0)||1;
+
+      let wSumReq=0;
+      const perSkill=required.map((req,idx)=>{
+        const uLvl=map.get(req.skill)||0; const rLvl=clamp(req.level,1,5);
+        const achieved=Math.min(1,uLvl/rLvl); const gap=Math.max(0,rLvl-uLvl);
+        const w=reqWeights[idx]||0; const impact=w*gap; wSumReq+=w*achieved;
+        return {skill:req.skill,reqLevel:rLvl,userLevel:Math.round(uLvl*10)/10,weight:w,achieved,gap,impact};
+      });
+
+      let baseScore=round(100*Math.min(1,wSumReq/totalReqWeight));
+
+      // Bonuses: Experience + Certs + Tools
+      const expBonus=Math.min(8,Math.floor((profile.experienceYears||0)*2));
+      const certBonus=calcCertBonus(profile,role);
+      const toolBonus=calcToolBonus(profile,role);
+      const score=clamp(baseScore+expBonus+certBonus+toolBonus,0,100);
+
+      // Score breakdown for display
+      const breakdown={base:baseScore,experience:expBonus,certs:certBonus,tools:toolBonus,total:score};
+
+      const missing=perSkill.filter(x=>x.gap>0||x.achieved<0.75).sort((a,b)=>b.impact-a.impact)
+        .map(x=>({skill:x.skill,label:skillLabel(x.skill),reqLevel:x.reqLevel,userLevel:x.userLevel,impact:round(x.impact*10)/10,evidence:profile.evidence?.[x.skill]||null}));
+
+      const topReq=[...perSkill].sort((a,b)=>b.weight-a.weight).slice(0,7).map(x=>({key:x.skill,label:skillLabel(x.skill),req:x.reqLevel,user:Math.min(x.userLevel,5)}));
+
+      // Phase 1.6: Dynamic confidence
+      const skillCount=(profile.skills||[]).length;
+      const confBase=Math.min(95, 40 + skillCount*5 + (profile.experienceYears>0?10:0) + (profile.certs.length>0?8:0) + ((profile.tools||[]).length>0?5:0));
+      const confNote=confBase>=80?"ثقة عالية — بيانات كافية للتحليل":confBase>=60?"ثقة متوسطة — أضف مزيد من المهارات":"ثقة منخفضة — أضف مهارات وشهادات لتحسين الدقة";
+
+      // Phase 1.6: Dynamic estWeeks
+      const prefsMultiplier={fast:0.7,balanced:1,parttime:1.4};
+      const rawWeeks=score>=90?0:score>=70?Math.ceil((100-score)/7):score>=50?Math.ceil((100-score)/5):Math.ceil((100-score)/4);
+      const estWeeks=Math.max(0,round(rawWeeks*(prefsMultiplier[profile.prefs]||1)));
+
+      // Phase 1.4: Dynamic roadmap
+      const totalWeeks={fast:8,balanced:12,parttime:16}[profile.prefs]||12;
+      const phases=["تأسيس","بناء","تطبيق","تعزيز"];
+      const roadmap=[];
+      const gapSkills=missing.slice(0,6);
+      for(let w=1;w<=Math.min(totalWeeks,gapSkills.length>0?totalWeeks:4);w++){
+        const phaseIdx=Math.min(3,Math.floor((w-1)/(totalWeeks/4)));
+        const skillIdx=(w-1)%Math.max(1,gapSkills.length);
+        const sk=gapSkills[skillIdx]||{label:"مراجعة عامة",skill:"general"};
+        const res=RESOURCES[sk.skill]||RESOURCES.default;
+        roadmap.push({
+          week:w, phase:phases[phaseIdx],
+          focus:[sk.label],
+          tasks:[
+            {title:w<=totalWeeks/3?"مراجعة الأساسيات والمفاهيم":w<=totalWeeks*2/3?"تطبيق عملي ومشروع مصغر":"مشروع متقدم وتحضير للمقابلات",resource:res[0]?.name||"منصة سطر"},
+            ...(res[1]?[{title:"مرجع إضافي",resource:res[1].name}]:[]),
+          ],
+        });
+      }
+
+      // Phase 2.3: Dynamic projects
+      const roleProjects=(PROJECTS_DB[role.id]||[]).slice(0,3).map(p=>({
+        ...p,
+        relevance:p.skills.filter(sk=>missing.some(m=>m.skill===sk)).length,
+      })).sort((a,b)=>b.relevance-a.relevance);
+
+      return {score,breakdown,perSkill,missing,roadmap,projects:roleProjects.length?roleProjects:[{title:"مشروع تطبيقي عام",objective:"تطبيق المهارات المطلوبة عملياً",skills:[],deliverables:["تقرير","كود"]}],charts:topReq,estWeeks,confidence:{score:confBase,note:confNote}};
+    }
+
+    // ═══════════════════════════════════
+    // RENDER ANALYSIS (Phase 1)
+    // ═══════════════════════════════════
+    function renderAnalysis(res,role) {
+      dom.scoreValue.textContent=String(res.score); dom.scoreBar.style.width=res.score+"%";
+
+      // Show score breakdown
+      const bdEl=dom.scoreValue.parentElement.querySelector('.breakdown');
+      if(bdEl) bdEl.remove();
+      if(res.breakdown) {
+        const bd=document.createElement('div'); bd.className='breakdown';
+        bd.style.cssText='margin-top:10px;font-size:11px;color:var(--text2);line-height:1.8';
+        bd.innerHTML=`<div style="display:flex;gap:8px;flex-wrap:wrap">`+
+          `<span style="background:var(--primaryDim);padding:2px 8px;border-radius:6px">🎯 المهارات: ${res.breakdown.base}</span>`+
+          (res.breakdown.experience>0?`<span style="background:rgba(16,185,129,0.1);padding:2px 8px;border-radius:6px;color:#10B981">💼 الخبرة: +${res.breakdown.experience}</span>`:"")+
+          (res.breakdown.certs>0?`<span style="background:rgba(245,158,11,0.1);padding:2px 8px;border-radius:6px;color:#F59E0B">📜 الشهادات: +${res.breakdown.certs}</span>`:"")+
+          (res.breakdown.tools>0?`<span style="background:rgba(139,92,246,0.1);padding:2px 8px;border-radius:6px;color:#8B5CF6">🔧 الأدوات: +${res.breakdown.tools}</span>`:"")+
+          `</div>`;
+        dom.scoreValue.parentElement.appendChild(bd);
+      }
+      dom.roleValue.textContent=role.ar; dom.roleNote.textContent=role.descAr;
+      dom.confidenceValue.textContent=String(res.confidence?.score||50);
+      dom.confidenceBar.style.width=(res.confidence?.score||50)+"%";
+      dom.confidenceNote.textContent=res.confidence?.note||"";
+
+      if(res.estWeeks>0) { dom.estimateBadge.style.display="inline-flex"; dom.estimateText.textContent=`~${res.estWeeks} أسبوع للوصول للجاهزية`; }
+      else { dom.estimateBadge.style.display="none"; }
+
+      // Vision 2030 badge
+      const mkt=MARKET_DATA[role.id]||{};
+      const existing=dom.roleValue.parentElement.querySelector('.vision-badge');
+      if(existing) existing.remove();
+      if(mkt.vision) {
+        const badge=document.createElement('div'); badge.className='vision-badge';
+        badge.innerHTML=`<div style="margin-top:8px;padding:6px 10px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:8px;display:inline-block"><span style="color:#10B981;font-weight:800;font-size:11px">🇸🇦 متوافق مع: ${escHtml(mkt.vision)}</span></div>`;
+        dom.roleValue.parentElement.appendChild(badge);
+      }
+
+      // Missing skills (XSS-safe — Phase 1.3)
+      dom.missingList.innerHTML="";
+      if(!res.missing.length) {
+        const li=document.createElement("li"); li.innerHTML=`<span class="warn">جاهز جدًا — ركّز على مشاريع قوية!</span>`; dom.missingList.appendChild(li);
+      } else {
+        for(const m of res.missing.slice(0,12)) {
+          const ev=state.profile.evidence?.[m.skill];
+          const li=document.createElement("li"); li.style.marginBottom="8px";
+          const row=document.createElement("div"); row.className="miss-row";
+
+          const text=document.createElement("div"); text.className="miss-text";
+          const b=document.createElement("b"); b.textContent=m.label;
+          text.appendChild(b);
+          text.appendChild(document.createTextNode(` — مطلوب ${m.reqLevel}/5, مستواك ${m.userLevel}/5`));
+
+          const evDiv=document.createElement("div"); evDiv.className="miss-ev";
+          if(ev?.url) {
+            const a=document.createElement("a"); a.className="evlink"; a.target="_blank"; a.textContent="رابط الإثبات";
+            if(ev.url.startsWith("http")) a.href=ev.url; else a.href="#";
+            evDiv.appendChild(a);
+          } else { evDiv.innerHTML=`<span style="opacity:.7">بدون إثبات</span>`; }
+          text.appendChild(evDiv);
+
+          // Resources link
+          const resList=RESOURCES[m.skill]||RESOURCES.default;
+          if(resList[0]) {
+            const resDiv=document.createElement("div"); resDiv.style.cssText="margin-top:4px;font-size:11px";
+            const resLink=document.createElement("a"); resLink.className="evlink"; resLink.href=resList[0].url; resLink.target="_blank";
+            resLink.textContent="📚 "+resList[0].name;
+            resDiv.appendChild(resLink); text.appendChild(resDiv);
+          }
+
+          const actions=document.createElement("div"); actions.className="miss-actions";
+          const btn=document.createElement("button"); btn.className="btn btn-ghost btn-xs"; btn.textContent=ev?"تعديل إثبات":"أضف إثبات";
+          btn.addEventListener("click",()=>openEvidenceModal(m.skill));
+          actions.appendChild(btn);
+
+          row.append(text,actions); li.appendChild(row); dom.missingList.appendChild(li);
+        }
+      }
+
+      // Roadmap
+      dom.roadmap.innerHTML=res.roadmap.map(w=>`<div class="week"><div class="week-head"><div class="w">الأسبوع ${w.week} <span class="phase-tag">${escHtml(w.phase)}</span></div><div class="focus">${w.focus.map(f=>escHtml(f)).join(" + ")}</div></div><ul>${w.tasks.map(t=>`<li>${escHtml(t.title)} <span style="color:var(--muted)">— ${escHtml(t.resource)}</span></li>`).join("")}</ul></div>`).join("");
+
+      // Projects
+      dom.projects.innerHTML=res.projects.map(p=>`<div class="project"><h5>${escHtml(p.title)}</h5><div class="small" style="margin-top:6px">${escHtml(p.objective)}</div>${(p.deliverables||[]).length?`<div class="proj-meta">${p.deliverables.map(d=>`<span class="proj-tag">${escHtml(d)}</span>`).join("")}</div>`:""}</div>`).join("");
+
+      try { drawBarChart(dom.barChart,res.charts); drawRadarChart(dom.radarChart,res.charts); } catch(e) { console.error(e); }
+      state.completedSteps.add("analysis");
+    }
+
+    // ═══════════════════════════════════
+    // CHARTS (Canvas)
+    // ═══════════════════════════════════
+    function setupCanvas(canvas) { const rect=canvas.parentElement.getBoundingClientRect(); const dpr=window.devicePixelRatio||1; const w=Math.max(280,rect.width-24); const h=280; canvas.width=w*dpr; canvas.height=h*dpr; canvas.style.width=w+"px"; canvas.style.height=h+"px"; const ctx=canvas.getContext("2d"); ctx.scale(dpr,dpr); return {ctx,W:w,H:h}; }
+    function roundRect(ctx,x,y,w,h,r) { ctx.beginPath(); ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r); ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h); ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r); ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath(); }
+
+    function drawBarChart(canvas,data) {
+      if(!data||!data.length) return; const {ctx,W,H}=setupCanvas(canvas); ctx.clearRect(0,0,W,H);
+      const pad={t:50,b:60,l:50,r:20}; const cW=W-pad.l-pad.r; const cH=H-pad.t-pad.b; const n=data.length; const gW=cW/n; const bW=gW*0.28;
+      ctx.strokeStyle="#2a3530"; ctx.lineWidth=1;
+      for(let i=1;i<=MAX_SKILL_LEVEL;i++) { const y=pad.t+cH-cH*(i/MAX_SKILL_LEVEL); ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(W-pad.r,y); ctx.stroke(); ctx.fillStyle="#6b7c73"; ctx.font="11px system-ui"; ctx.fillText(String(i),pad.l-20,y+4); }
+      ctx.fillStyle="#e8ede9"; ctx.font="bold 14px system-ui"; ctx.fillText("مطابقة المهارات",pad.l,30);
+      for(let i=0;i<n;i++) { const d=data[i]; const x0=pad.l+i*gW+gW/2; const uH=cH*(d.user/MAX_SKILL_LEVEL); const rH=cH*(d.req/MAX_SKILL_LEVEL);
+        ctx.fillStyle="rgba(59,130,246,0.12)"; ctx.beginPath(); roundRect(ctx,x0-bW-4,pad.t+cH-rH,bW,rH,4); ctx.fill();
+        const grad=ctx.createLinearGradient(0,pad.t+cH-uH,0,pad.t+cH); grad.addColorStop(0,"#3B82F6"); grad.addColorStop(1,"#1D4ED8"); ctx.fillStyle=grad; ctx.beginPath(); roundRect(ctx,x0+4,pad.t+cH-uH,bW,uH,4); ctx.fill();
+        ctx.fillStyle="#a3b0a8"; ctx.font="11px system-ui"; const lbl=d.label.length>10?d.label.slice(0,10)+"…":d.label; ctx.save(); ctx.translate(x0,H-pad.b+16); ctx.rotate(-0.4); ctx.fillText(lbl,-20,0); ctx.restore();
+      }
+      ctx.fillStyle="#3B82F6"; roundRect(ctx,W-160,14,12,12,3); ctx.fill(); ctx.fillStyle="#a3b0a8"; ctx.font="11px system-ui"; ctx.fillText("مستواك",W-142,24);
+      ctx.fillStyle="rgba(59,130,246,0.15)"; roundRect(ctx,W-90,14,12,12,3); ctx.fill(); ctx.fillStyle="#a3b0a8"; ctx.fillText("المطلوب",W-72,24);
+    }
+
+    function drawRadarChart(canvas,data) {
+      if(!data||!data.length) return; const {ctx,W,H}=setupCanvas(canvas); ctx.clearRect(0,0,W,H);
+      const cx=W/2; const cy=H/2+16; const R=Math.min(W,H)*0.32; const n=data.length;
+      for(let r=1;r<=MAX_SKILL_LEVEL;r++) { const rr=(R*r)/MAX_SKILL_LEVEL; ctx.strokeStyle="#2a3530"; ctx.lineWidth=1; ctx.beginPath(); for(let i=0;i<n;i++) { const a=(Math.PI*2*i)/n-Math.PI/2; const x=cx+Math.cos(a)*rr; const y=cy+Math.sin(a)*rr; i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); } ctx.closePath(); ctx.stroke(); }
+      for(let i=0;i<n;i++) { const a=(Math.PI*2*i)/n-Math.PI/2; ctx.strokeStyle="#2a3530"; ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+Math.cos(a)*R,cy+Math.sin(a)*R); ctx.stroke();
+        const lx=cx+Math.cos(a)*(R+16); const ly=cy+Math.sin(a)*(R+16); ctx.fillStyle="#a3b0a8"; ctx.font="10px system-ui"; const lbl=data[i].label.length>10?data[i].label.slice(0,10)+"…":data[i].label; ctx.fillText(lbl,lx-20,ly+4); }
+      function poly(vals,fill,stroke) { ctx.beginPath(); for(let i=0;i<n;i++) { const a=(Math.PI*2*i)/n-Math.PI/2; const rr=R*(vals[i]/MAX_SKILL_LEVEL); const x=cx+Math.cos(a)*rr; const y=cy+Math.sin(a)*rr; i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); } ctx.closePath(); ctx.fillStyle=fill; ctx.strokeStyle=stroke; ctx.lineWidth=2; ctx.fill(); ctx.stroke(); }
+      poly(data.map(d=>d.req),"rgba(59,130,246,0.06)","#344038");
+      poly(data.map(d=>d.user),"rgba(59,130,246,0.18)","#3B82F6");
+    }
+
+    // ═══════════════════════════════════
+    // EVIDENCE MODAL (Phase 1.7)
+    // ═══════════════════════════════════
+    function openEvidenceModal(skillKey) {
+      state.currentEvidenceSkill=skillKey;
+      const current=state.profile.evidence?.[skillKey]||{};
+      $("evidenceModalTitle").textContent=`إثبات: ${skillLabel(skillKey)}`;
+      $("evidenceUrl").value=current.url||"";
+      $("evidenceType").value=current.type||"github";
+      $("evidenceNote").value=current.note||"";
+      $("evidenceModal").classList.add("open");
+    }
+    function closeEvidenceModal() { $("evidenceModal").classList.remove("open"); state.currentEvidenceSkill=null; }
+    function saveEvidence() {
+      const sk=state.currentEvidenceSkill; if(!sk) return;
+      const url=$("evidenceUrl").value.trim();
+      if(!state.profile.evidence) state.profile.evidence={};
+      state.profile.evidence[sk]={url,type:$("evidenceType").value,note:$("evidenceNote").value.trim(),updatedAt:nowISO()};
+      store.set(STORAGE_KEY_PROFILE,state.profile); toast(i18n.t("evidenceSaved"));
+      if(state.analysis) renderAnalysis(state.analysis.res,state.analysis.role);
+      closeEvidenceModal();
+    }
+
+    // ═══════════════════════════════════
+    // CHAT (Phase 2.2 — Make.com AI)
+    // ═══════════════════════════════════
+    function saySiraj(sender,text) {
+      const w=document.createElement("div"); w.className="msg "+(sender==="siraj"?"msg-siraj":"msg-user");
+      const b=document.createElement("div"); b.className="bubble"; w.appendChild(b);
+      dom.dialog.appendChild(w); dom.dialog.scrollTop=dom.dialog.scrollHeight;
+      if(sender==="user") { b.textContent=text; return; }
+      // Typewriter
+      let i=0; b.textContent="";
+      function type() { if(i<text.length) { b.textContent+=text.charAt(i); i++; dom.dialog.scrollTop=dom.dialog.scrollHeight; setTimeout(type,15); } }
+      type();
+    }
+
+    function showTyping() {
+      const w=document.createElement("div"); w.className="msg msg-siraj"; w.id="typingMsg";
+      w.innerHTML=`<div class="bubble"><div class="typing-indicator"><span></span><span></span><span></span></div></div>`;
+      dom.dialog.appendChild(w); dom.dialog.scrollTop=dom.dialog.scrollHeight;
+    }
+    function removeTyping() { const t=$("typingMsg"); if(t) t.remove(); }
+
+    async function handleChat(text) {
+      const raw=(text||"").trim(); if(!raw) return;
+      saySiraj("user",raw);
+
+      // Build context for AI
+      const context = {
+        question: raw,
+        profile: { major: state.profile.major, skills: state.profile.skills.map(s=>({name:skillLabel(s.key),level:s.level})), experience: state.profile.experienceYears, sector: state.profile.sector, certs: state.profile.certs },
+        selectedRole: state.selectedRoleId ? ROLES.find(r=>r.id===state.selectedRoleId)?.ar : null,
+        analysisScore: state.analysis?.res?.score || null,
+        topGaps: state.analysis?.res?.missing?.slice(0,3).map(m=>m.label) || [],
       };
 
-      // ═══════════════════════════════════
-      // i18n
-      // ═══════════════════════════════════
-      const STRINGS = {
-        ar: { shareCopied: "تم النسخ", fillFirst: "يرجى إكمال التخصص والمهارات أولاً", pickRole: "اختر الوظيفة أولاً", autoPicked: "تم التحديد آلياً", profileSaved: "تم الحفظ", profileReset: "تم التصفير", slowDown: "الرجاء الانتظار", analysisError: "استخدمنا المحرك المحلي لعدم توفر إنترنت", pdfDone: "تم التحميل", evidence: "إثبات", evidenceSaved: "تم حفظ الإثبات بنجاح" },
-        en: { shareCopied: "Copied", fillFirst: "Fill profile first", pickRole: "Pick role first", autoPicked: "Auto-picked", profileSaved: "Saved", profileReset: "Reset", slowDown: "Wait", analysisError: "Used Local Engine", pdfDone: "Downloaded", evidence: "Evidence", evidenceSaved: "Evidence saved" },
-      };
-      const i18n = { lang: "ar", t(k) { return (STRINGS[this.lang] || STRINGS.ar)[k] || k; } };
+      // Try Make.com webhook first
+      if(CHAT_WEBHOOK.includes("hook.")) {
+        showTyping();
+        try {
+          const resp=await fetch(CHAT_WEBHOOK,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(context)});
+          removeTyping();
+          if(resp.ok) {
+            const data=await resp.json();
+            const reply=data.reply||data.text||data.message||data.response||"لم أستطع فهم السؤال، حاول مرة أخرى.";
+            saySiraj("siraj",reply); return;
+          }
+        } catch(e) { removeTyping(); console.warn("Chat webhook failed, using local fallback"); }
+      }
 
-      // ═══════════════════════════════════
-      // SKILLS & ROLES
-      // ═══════════════════════════════════
-      const SKILLS = {
-        sql: { ar: "SQL", en: "SQL" }, excel: { ar: "Excel", en: "Excel" }, powerbi: { ar: "Power BI", en: "Power BI" }, python: { ar: "Python", en: "Python" },
-        statistics: { ar: "الإحصاء", en: "Statistics" }, ml: { ar: "تعلم الآلة", en: "Machine Learning" }, data_viz: { ar: "تصوير البيانات", en: "Data Visualization" }, 
-        data_modeling: { ar: "نمذجة البيانات", en: "Data Modeling" }, etl: { ar: "ETL", en: "ETL" }, cloud: { ar: "الحوسبة السحابية", en: "Cloud" },
-        aws: { ar: "AWS", en: "AWS" }, azure: { ar: "Azure", en: "Azure" }, gcp: { ar: "GCP", en: "GCP" }, cybersecurity: { ar: "الأمن السيبراني", en: "Cybersecurity" },
-        networking: { ar: "الشبكات", en: "Networking" }, linux: { ar: "Linux", en: "Linux" }, devops: { ar: "DevOps", en: "DevOps" }, git: { ar: "Git", en: "Git" },
-        api: { ar: "واجهات API", en: "APIs" }, requirements: { ar: "تحليل المتطلبات", en: "Requirements" }, process: { ar: "تحسين العمليات", en: "Process Improvement" }, 
-        stakeholder: { ar: "إدارة أصحاب المصلحة", en: "Stakeholder Mgmt" }, communication: { ar: "التواصل", en: "Communication" }, presentation: { ar: "العرض والتقديم", en: "Presentation" },
-        product: { ar: "إدارة المنتج", en: "Product Management" }, ux: { ar: "تجربة المستخدم UX", en: "UX" }, erp: { ar: "ERP", en: "ERP" }, sap: { ar: "SAP", en: "SAP" },
-        agile: { ar: "Agile/Scrum", en: "Agile/Scrum" }, testing: { ar: "اختبار البرمجيات", en: "Testing" }, coding: { ar: "البرمجة", en: "Programming" },
-      };
+      // Local fallback
+      const t=raw.toLowerCase();
+      if(t.includes("ناقصني")||t.includes("وش ناقصني")) {
+        if(!state.analysis) { saySiraj("siraj","حلّل جاهزيتك أولاً من تبويب التحليل، بعدها أقدر أخبرك وش ناقصك بالضبط."); return; }
+        const gaps=state.analysis.res.missing.slice(0,3).map(m=>`${m.label} (مطلوب ${m.reqLevel}, مستواك ${m.userLevel})`).join("\n• ");
+        saySiraj("siraj",`أهم الفجوات عندك:\n• ${gaps}\n\nركّز على هالمهارات أولاً وأضف إثباتات (روابط GitHub أو شهادات).`); return;
+      }
+      if(t.includes("أفضل وظيفة")||t.includes("وظيفة لي")) { autoPickBestRole(); setTab("roles"); saySiraj("siraj","اخترت لك أنسب وظيفة بناءً على مهاراتك الحالية. شوف التبويب!"); return; }
+      if(t.includes("أسبوع")||t.includes("كم وقت")) {
+        if(!state.analysis) { saySiraj("siraj","حلّل جاهزيتك أولاً عشان أقدر أعطيك تقدير دقيق."); return; }
+        saySiraj("siraj",`بناءً على تحليلك، تحتاج تقريباً ${state.analysis.res.estWeeks} أسبوع للوصول لجاهزية جيدة. الخطة موجودة في تبويب التحليل.`); return;
+      }
+      if(t.includes("نصيحة")||t.includes("تحسين")) {
+        const tips=[];
+        if((state.profile.skills||[]).length<5) tips.push("أضف مزيد من المهارات لرفع دقة التحليل.");
+        if(!state.profile.experienceYears) tips.push("لو عندك أي خبرة (حتى تدريب) سجّلها.");
+        if(!state.profile.certs.length) tips.push("الشهادات ترفع نسبتك — جرب Google Certificates المجانية.");
+        if(!tips.length) tips.push("ملفك ممتاز! ركّز على بناء مشاريع بورتفوليو قوية.");
+        saySiraj("siraj",tips.join("\n• ")); return;
+      }
+      saySiraj("siraj","أقدر أساعدك في:\n• اختيار الوظيفة الأنسب\n• تحليل الفجوات\n• نصائح تحسين الملف\n• تقدير الوقت المطلوب\n\nجرب الأزرار السريعة أو اكتب سؤالك.");
+    }
 
-      const ROLES = [
-        { id: "data_analyst", ar: "محلل بيانات", en: "Data Analyst", descAr: "تحليل البيانات وبناء لوحات وقراءات تنفيذية.", tools: ["sql", "excel", "powerbi"], required: [{ skill: "sql", level: 4, weight: 10 }, { skill: "excel", level: 4, weight: 7 }, { skill: "powerbi", level: 4, weight: 9 }, { skill: "statistics", level: 3, weight: 6 }, { skill: "data_viz", level: 4, weight: 6 }, { skill: "communication", level: 3, weight: 5 }, { skill: "presentation", level: 3, weight: 4 }], optional: [{ skill: "python", level: 2, weight: 3 }, { skill: "data_modeling", level: 2, weight: 3 }] },
-        { id: "data_scientist", ar: "عالم بيانات", en: "Data Scientist", descAr: "نمذجة تنبؤية وتحليلات متقدمة.", tools: ["python", "sql", "git"], required: [{ skill: "python", level: 4, weight: 10 }, { skill: "statistics", level: 4, weight: 9 }, { skill: "ml", level: 4, weight: 10 }, { skill: "sql", level: 3, weight: 6 }, { skill: "etl", level: 3, weight: 6 }, { skill: "git", level: 3, weight: 4 }, { skill: "communication", level: 3, weight: 5 }], optional: [{ skill: "cloud", level: 2, weight: 4 }, { skill: "api", level: 2, weight: 3 }] },
-        { id: "business_analyst", ar: "محلل أعمال", en: "Business Analyst", descAr: "تحليل متطلبات وربط التقنية بالعمل.", tools: ["excel", "agile"], required: [{ skill: "requirements", level: 4, weight: 10 }, { skill: "process", level: 4, weight: 8 }, { skill: "stakeholder", level: 4, weight: 8 }, { skill: "communication", level: 4, weight: 8 }, { skill: "presentation", level: 3, weight: 5 }, { skill: "agile", level: 3, weight: 5 }, { skill: "excel", level: 3, weight: 4 }], optional: [{ skill: "sql", level: 2, weight: 3 }] },
-        { id: "cyber_analyst", ar: "محلل أمن سيبراني", en: "Cyber Analyst", descAr: "مراقبة التهديدات، SOC، وتحليل الحوادث.", tools: ["linux", "networking"], required: [{ skill: "cybersecurity", level: 4, weight: 10 }, { skill: "networking", level: 4, weight: 8 }, { skill: "linux", level: 3, weight: 6 }, { skill: "communication", level: 3, weight: 5 }, { skill: "process", level: 3, weight: 4 }], optional: [{ skill: "cloud", level: 2, weight: 4 }] },
-        { id: "software_engineer", ar: "مهندس برمجيات", en: "Software Engineer", descAr: "تطوير منتجات برمجية، هندسة، اختبار.", tools: ["git", "api", "testing"], required: [{ skill: "coding", level: 4, weight: 10 }, { skill: "git", level: 3, weight: 6 }, { skill: "api", level: 3, weight: 6 }, { skill: "testing", level: 3, weight: 6 }, { skill: "communication", level: 3, weight: 4 }], optional: [{ skill: "cloud", level: 2, weight: 3 }] }
+    // ═══════════════════════════════════
+    // COMPARE ROLES (Phase 1.1)
+    // ═══════════════════════════════════
+    function runComparison() {
+      if(!validateProfile()) { toast(i18n.t("fillFirst")); return; }
+      const r1=ROLES.find(r=>r.id===dom.compare1.value);
+      const r2=ROLES.find(r=>r.id===dom.compare2.value);
+      if(!r1||!r2) return;
+      const a1=analyzeFallback(state.profile,r1);
+      const a2=analyzeFallback(state.profile,r2);
+      const m1=MARKET_DATA[r1.id]||{}; const m2=MARKET_DATA[r2.id]||{};
+
+      dom.compareResult.innerHTML=`
+        <div class="compare-col"><h5>${escHtml(r1.ar)}</h5>
+          <div class="compare-row"><span>الجاهزية</span><b style="color:var(--primary)">${a1.score}%</b></div>
+          <div class="compare-row"><span>الفجوات</span><span>${a1.missing.length}</span></div>
+          <div class="compare-row"><span>الأسابيع</span><span>${a1.estWeeks}</span></div>
+          <div class="compare-row"><span>الراتب</span><span>${escHtml(m1.salaryRange||"—")}</span></div>
+          <div class="compare-row"><span>الطلب</span><span>${escHtml(m1.demand||"—")}</span></div>
+        </div>
+        <div class="compare-col"><h5>${escHtml(r2.ar)}</h5>
+          <div class="compare-row"><span>الجاهزية</span><b style="color:var(--primary)">${a2.score}%</b></div>
+          <div class="compare-row"><span>الفجوات</span><span>${a2.missing.length}</span></div>
+          <div class="compare-row"><span>الأسابيع</span><span>${a2.estWeeks}</span></div>
+          <div class="compare-row"><span>الراتب</span><span>${escHtml(m2.salaryRange||"—")}</span></div>
+          <div class="compare-row"><span>الطلب</span><span>${escHtml(m2.demand||"—")}</span></div>
+        </div>`;
+    }
+
+    // ═══════════════════════════════════
+    // REPORT (Phase 1.2)
+    // ═══════════════════════════════════
+    function buildReport() {
+      if(!state.analysis) return null;
+      return {
+        id:state.reportId||uid(), createdAt:nowISO(), lang:i18n.lang,
+        profile:state.profile, role:{id:state.analysis.role.id,name:state.analysis.role.ar},
+        result:state.analysis.res,
+      };
+    }
+
+    function renderReport(rep) {
+      dom.reportSummary.innerHTML=`
+        <div class="report-stat"><div class="val">${rep.result.score}%</div><div class="lbl">الجاهزية</div></div>
+        <div class="report-stat"><div class="val">${rep.result.missing.length}</div><div class="lbl">فجوات</div></div>
+        <div class="report-stat"><div class="val">${rep.result.estWeeks}</div><div class="lbl">أسابيع</div></div>
+        <div class="report-stat"><div class="val">${rep.result.confidence?.score||0}%</div><div class="lbl">ثقة التحليل</div></div>`;
+      dom.reportJson.textContent=JSON.stringify(rep,null,2);
+    }
+
+    // ═══════════════════════════════════
+    // PDF — Multi-page Canvas → jsPDF
+    // ═══════════════════════════════════
+    async function downloadPDF(rep) {
+      toast("جاري تجهيز التقرير...");
+
+      const sectorName=rep.profile.sector==="gov"?"حكومي":rep.profile.sector==="private"?"خاص":"شبه حكومي";
+      const mkt=MARKET_DATA[rep.role.id]||{};
+      const bd=rep.result.breakdown||{};
+      const missing=(rep.result.missing||[]).slice(0,10);
+      const roadmap=(rep.result.roadmap||[]).slice(0,8);
+      const projects=(rep.result.projects||[]).slice(0,3);
+
+      const W=595*2, H=842*2, mg=80;
+      const rE=W-mg, cW=W-mg*2;
+      const pages=[]; let cv,c,Y;
+
+      function newPage(){
+        cv=document.createElement("canvas"); cv.width=W; cv.height=H;
+        c=cv.getContext("2d"); c.fillStyle="#fff"; c.fillRect(0,0,W,H);
+        pages.push(cv); Y=80;
+        c.fillStyle="#3B82F6"; c.fillRect(0,0,W,6);
+        c.fillStyle="#ccc"; c.font="400 13px 'Noto Kufi Arabic'"; c.textAlign="center";
+        c.fillText("صفحة "+pages.length+" — تقرير سِراج",W/2,H-30);
+      }
+      function need(h){ if(Y+h>H-70) newPage(); }
+      const txt=(t,x,y,s,co,w)=>{ c.fillStyle=co||"#111"; c.font=(w||"700")+" "+s+"px 'Noto Kufi Arabic',Tahoma,sans-serif"; c.textAlign="right"; c.textBaseline="top"; c.fillText(String(t),x,y); };
+      const txtC=(t,x,y,s,co,w)=>{ c.fillStyle=co||"#111"; c.font=(w||"700")+" "+s+"px 'Noto Kufi Arabic',Tahoma,sans-serif"; c.textAlign="center"; c.textBaseline="top"; c.fillText(String(t),x,y); };
+      const txtL=(t,x,y,s,co,w)=>{ c.fillStyle=co||"#111"; c.font=(w||"400")+" "+s+"px 'Noto Kufi Arabic',Tahoma,sans-serif"; c.textAlign="left"; c.textBaseline="top"; c.fillText(String(t),x,y); };
+      const ln=(x1,y1,x2,y2,co,lw)=>{ c.strokeStyle=co||"#E5E7EB"; c.lineWidth=lw||2; c.beginPath(); c.moveTo(x1,y1); c.lineTo(x2,y2); c.stroke(); };
+      const bx=(x,y,w,h,f,r)=>{ c.fillStyle=f; c.beginPath(); if(r){c.moveTo(x+r,y);c.lineTo(x+w-r,y);c.quadraticCurveTo(x+w,y,x+w,y+r);c.lineTo(x+w,y+h-r);c.quadraticCurveTo(x+w,y+h,x+w-r,y+h);c.lineTo(x+r,y+h);c.quadraticCurveTo(x,y+h,x,y+h-r);c.lineTo(x,y+r);c.quadraticCurveTo(x,y,x+r,y);}else{c.rect(x,y,w,h);} c.closePath(); c.fill(); };
+      const secH=(t)=>{ need(50); txt(t,rE,Y,22,"#1E3A5F","900"); Y+=30; ln(mg,Y,rE,Y,"#D1D5DB",2); Y+=12; };
+
+      // ═══ PAGE 1 ═══
+      newPage(); Y=60;
+      bx(0,0,W,180,"#0B1120",0); bx(0,174,W,6,"#3B82F6",0);
+      txt("SIRAJ  سِراج",rE-20,55,52,"#fff","900");
+      txt("التقرير الاستشاري للجاهزية المهنية",rE-20,120,24,"#60A5FA","700");
+      txtL("REF: "+rep.id.toUpperCase()+"  |  "+new Date().toLocaleDateString("ar-SA"),mg+20,140,15,"#6B7280","400");
+      Y=210;
+
+      // Profile
+      bx(mg,Y,cW,100,"#F8FAFC",14); bx(rE-8,Y,8,100,"#8B5CF6",0);
+      txt("بيانات الطالب",rE-24,Y+12,18,"#6D28D9","900");
+      txt("التخصص: "+(rep.profile.major||"—"),rE-24,Y+40,15,"#333","700");
+      txt("الخبرة: "+(rep.profile.experienceYears||0)+" سنة  |  المستوى: "+(rep.profile.eduLevel==="GRAD"?"خريج":rep.profile.eduLevel==="PRO"?"محترف":"جامعة"),rE-24,Y+64,14,"#666","400");
+      txtL("الشهادات: "+((rep.profile.certs||[]).slice(0,3).join("، ")||"—"),mg+24,Y+40,14,"#666","400");
+      txtL("الأدوات: "+((rep.profile.tools||[]).slice(0,4).join("، ")||"—"),mg+24,Y+64,14,"#666","400");
+      Y+=120;
+
+      // Score
+      bx(mg,Y,cW,140,"#F0F7FF",16); bx(rE-8,Y,8,140,"#3B82F6",0);
+      txt("الملخص التنفيذي",rE-24,Y+14,20,"#1E3A5F","900");
+      const cX=mg+120,cY2=Y+75,cR=48,sCol=rep.result.score>=70?"#10B981":rep.result.score>=40?"#F59E0B":"#EF4444";
+      c.beginPath(); c.arc(cX,cY2,cR,0,Math.PI*2); c.fillStyle=sCol; c.fill();
+      c.fillStyle="#fff"; c.font="900 38px 'Noto Kufi Arabic'"; c.textAlign="center"; c.fillText(rep.result.score+"%",cX,cY2-16);
+      c.font="700 13px 'Noto Kufi Arabic'"; c.fillText("الجاهزية",cX,cY2+20);
+      txt("الوظيفة: "+rep.role.name,rE-24,Y+50,18,"#333","700");
+      txt("القطاع: "+sectorName+"  |  الأسابيع: "+rep.result.estWeeks+"  |  الثقة: "+(rep.result.confidence?.score||0)+"%",rE-24,Y+78,14,"#666","400");
+      txt("عدد الفجوات: "+missing.length+"  |  عدد المهارات: "+(rep.profile.skills||[]).length,rE-24,Y+104,14,"#666","400");
+      Y+=160;
+
+      // Breakdown
+      if(bd.base!==undefined){
+        bx(mg,Y,cW,44,"#F8FAFC",10);
+        const chips=[{l:"المهارات",v:bd.base,bg:"#DBEAFE",cl:"#2563EB"},{l:"الخبرة",v:"+"+( bd.experience||0),bg:"#D1FAE5",cl:"#059669"},{l:"الشهادات",v:"+"+(bd.certs||0),bg:"#FEF3C7",cl:"#D97706"},{l:"الأدوات",v:"+"+(bd.tools||0),bg:"#EDE9FE",cl:"#7C3AED"}];
+        let cx=rE-24;
+        for(const ch of chips){ const lb=ch.l+": "+ch.v; c.font="700 14px 'Noto Kufi Arabic'"; const tw=c.measureText(lb).width; bx(cx-tw-14,Y+8,tw+22,28,ch.bg,6); txt(lb,cx-4,Y+12,14,ch.cl,"700"); cx-=tw+36; }
+        Y+=58;
+      }
+
+      // Market
+      if(mkt.salaryRange){
+        bx(mg,Y,cW,50,"#ECFDF5",10);
+        txt("سوق العمل السعودي — الراتب: "+mkt.salaryRange+" ر.س  |  الطلب: "+(mkt.demand||""),rE-24,Y+6,14,"#065F46","700");
+        txtL("رؤية 2030: "+(mkt.vision||""),mg+24,Y+28,14,"#065F46","400");
+        Y+=64;
+      }
+
+      // Charts
+      try{
+        const bI=dom.barChart.toDataURL("image/png"), rI=dom.radarChart.toDataURL("image/png");
+        need(340); secH("تحليل المهارات");
+        const chW=(cW-30)/2, chH=280;
+        c.drawImage(await loadImg(bI),rE-chW,Y,chW,chH);
+        c.drawImage(await loadImg(rI),mg,Y,chW,chH);
+        Y+=chH+20;
+      }catch(e){}
+
+      // ═══ SKILLS GAP ═══
+      need(80); secH("فجوة المهارات");
+      if(missing.length){
+        bx(mg,Y,cW,34,"#F3F4F6",0);
+        txt("المهارة",rE-20,Y+7,14,"#374151","800");
+        txt("المطلوب",rE-260,Y+7,14,"#374151","800");
+        txt("مستواك",rE-380,Y+7,14,"#374151","800");
+        txt("الفجوة",rE-490,Y+7,14,"#374151","800");
+        txt("المورد التعليمي",mg+200,Y+7,14,"#374151","800");
+        Y+=38;
+        for(const m of missing){
+          need(36); ln(mg,Y+32,rE,Y+32,"#F3F4F6",1);
+          txt(m.label,rE-20,Y+6,15,"#333","700");
+          txt(m.reqLevel+"/5",rE-260,Y+6,15,"#666","400");
+          txt(m.userLevel+"/5",rE-380,Y+6,15,"#666","400");
+          const g=Math.max(0,m.reqLevel-m.userLevel);
+          txt(String(g),rE-490,Y+6,15,g>0?"#EF4444":"#10B981","700");
+          const rs=RESOURCES[m.skill]||RESOURCES.default;
+          if(rs&&rs[0]) txtL(rs[0].name,mg+20,Y+6,13,"#3B82F6","400");
+          Y+=34;
+        }
+        Y+=8;
+      } else { txt("ممتاز! لا فجوات كبيرة — ركّز على البورتفوليو",rE-20,Y,17,"#10B981","700"); Y+=30; }
+
+      // ═══ ROADMAP ═══
+      if(roadmap.length){
+        need(80); secH("خارطة الطريق المخصصة ("+({fast:"مكثف",balanced:"متوازن",parttime:"جزئي"}[rep.profile.prefs]||"متوازن")+")");
+        for(const w of roadmap){
+          need(40); bx(mg,Y,cW,34,w.week%2===0?"#F8FAFC":"#fff",0);
+          txt("الأسبوع "+w.week,rE-20,Y+7,15,"#333","700");
+          txt(w.phase,rE-170,Y+7,14,"#3B82F6","700");
+          txt(w.focus.join(" + "),rE-300,Y+7,14,"#666","400");
+          const sk=missing.find(m2=>m2.label===w.focus[0]);
+          if(sk){ const r2=RESOURCES[sk.skill]||RESOURCES.default; if(r2&&r2[0]) txtL(r2[0].name,mg+20,Y+7,12,"#9CA3AF","400"); }
+          Y+=36;
+        }
+        Y+=10;
+      }
+
+      // ═══ PROJECTS ═══
+      if(projects.length){
+        need(80); secH("مشاريع بورتفوليو مقترحة");
+        for(const p of projects){
+          need(90); bx(mg,Y,cW,78,"#F8FAFC",10); bx(rE-6,Y,6,78,"#F59E0B",0);
+          txt(p.title||"مشروع تطبيقي",rE-20,Y+10,16,"#333","800");
+          txt(p.objective||"",rE-20,Y+34,13,"#666","400");
+          if(p.deliverables&&p.deliverables.length) txtL("المخرجات: "+p.deliverables.join("، "),mg+20,Y+54,12,"#9CA3AF","400");
+          Y+=88;
+        }
+      }
+
+      // ═══ RESOURCES ═══
+      need(80); secH("موارد تعليمية مُوصى بها");
+      const shown=new Set();
+      for(const m of missing.slice(0,6)){
+        const rl=RESOURCES[m.skill]||RESOURCES.default;
+        for(const r of rl){
+          if(shown.has(r.name)) continue; shown.add(r.name);
+          need(30); txt("• "+m.label+" — "+r.name,rE-20,Y+4,14,"#333","400");
+          txtL(r.url,mg+20,Y+4,12,"#3B82F6","400"); Y+=28;
+        }
+      }
+      const genRes=[
+        {n:"منصة سطر (Satr)",u:"satr.codes",d:"منصة سعودية مجانية للتعلم التقني"},
+        {n:"منصة رواق (Rwaq)",u:"rwaq.org",d:"محتوى عربي أكاديمي"},
+        {n:"Coursera",u:"coursera.org",d:"شهادات احترافية من جامعات عالمية"},
+        {n:"منصة إدراك",u:"edraak.org",d:"دورات عربية مجانية"},
+        {n:"LinkedIn Learning",u:"linkedin.com/learning",d:"دورات مهنية متقدمة"},
       ];
+      need(50); Y+=8;
+      txt("منصات تعليمية عامة:",rE-20,Y,15,"#1E3A5F","800"); Y+=26;
+      for(const r of genRes){ need(28); txt("▪ "+r.n+" — "+r.d,rE-20,Y+2,13,"#555","400"); txtL(r.u,mg+20,Y+2,12,"#3B82F6","400"); Y+=24; }
 
-      function normalizeSkillName(raw) {
-        const s = String(raw || "").trim().toLowerCase().replace(/[^\p{L}\p{N}\s\/.\-+]/gu, " ").replace(/\s+/g, " ").trim();
-        if (!s) return null;
-        for (const [k, m] of Object.entries(SKILLS)) { if (s === m.ar.toLowerCase() || s === m.en.toLowerCase()) return k; }
-        return CUSTOM_SKILL_PREFIX + s.slice(0, 40);
-      }
-      function skillLabel(k) { if (k.startsWith(CUSTOM_SKILL_PREFIX)) return k.replace(CUSTOM_SKILL_PREFIX, ""); const m = SKILLS[k]; return m ? (i18n.lang === "ar" ? m.ar : m.en) : k; }
+      // ═══ NEXT STEPS ═══
+      need(100); secH("الخطوات القادمة");
+      const steps=[
+        "1. ابدأ بأعلى 3 فجوات أثراً من الجدول أعلاه",
+        "2. سجّل في الدورات الموصى بها وأكملها خلال الأسابيع المحددة",
+        "3. ابنِ مشروع بورتفوليو واحد على الأقل وارفعه على GitHub",
+        "4. أضف الشهادات والمشاريع لملفك على LinkedIn",
+        "5. ابدأ التقديم على الوظائف وأعد تحليل جاهزيتك كل شهر",
+      ];
+      for(const s of steps){ need(30); txt(s,rE-20,Y+4,15,"#333","400"); Y+=30; }
 
-      const state = {
-        tab: "profile", selectedRoleId: null, completedSteps: new Set(),
-        profile: { major: "", eduLevel: "UNI", experienceYears: 0, prefs: "balanced", sector: "quasi", certs: [], tools: [], skills: [], evidence: {} },
-        analysis: null, reportId: null,
-      };
+      // ═══ CLOSING ═══
+      need(170); Y+=20;
+      bx(mg,Y,cW,140,"#0B1120",14); bx(mg+4,Y+4,cW-8,132,"#111827",12);
+      txtC("رسالة من سِراج",W/2,Y+18,20,"#60A5FA","900");
+      const m1=rep.result.score>=70?"أنت في وضع ممتاز! ركّز على مشاريع بورتفوليو قوية وابدأ التقديم.":rep.result.score>=40?"عندك أساس جيد! اتبع خارطة الطريق وركّز على أعلى الفجوات أثراً.":"كل خبير بدأ من الصفر. ابدأ بالمهارة الأولى واستمر — الرحلة تستاهل.";
+      txtC(m1,W/2,Y+50,15,"#D1D5DB","400");
+      txtC("نتمنى لك كل التوفيق والنجاح في مسيرتك المهنية",W/2,Y+80,16,"#F59E0B","700");
+      txtC("المملكة تحتاج كفاءات مثلك لتحقيق رؤية 2030 — وفقك الله",W/2,Y+108,14,"#9CA3AF","400");
 
-      const dom = {};
-      function cacheDom() {
-        dom.tabs = document.querySelectorAll(".tab"); dom.steps = document.querySelectorAll(".step");
-        dom.views = { profile: $("viewProfile"), roles: $("viewRoles"), analysis: $("viewAnalysis"), report: $("viewReport") };
-        dom.major = $("major"); dom.eduLevel = $("eduLevel"); dom.experienceYears = $("experienceYears"); dom.prefs = $("prefs"); dom.sector = $("sector"); dom.certs = $("certs"); dom.tools = $("tools");
-        dom.skillName = $("skillName"); dom.skillLevel = $("skillLevel"); dom.skillsBody = $("skillsBody"); dom.skillTable = $("skillTable"); dom.skillsEmpty = $("skillsEmpty");
-        dom.rolesGrid = $("rolesGrid"); dom.scoreValue = $("scoreValue"); dom.scoreBar = $("scoreBar"); dom.roleValue = $("roleValue"); dom.roleNote = $("roleNote");
-        dom.confidenceValue = $("confidenceValue"); dom.confidenceBar = $("confidenceBar"); dom.confidenceNote = $("confidenceNote");
-        dom.missingList = $("missingList"); dom.roadmap = $("roadmap"); dom.projects = $("projects"); dom.barChart = $("barChart"); dom.radarChart = $("radarChart");
-        dom.dialog = $("dialog"); dom.chatInput = $("chatInput"); dom.toast = $("toast"); dom.toastText = $("toastText");
-        dom.estimateBadge = $("estimateBadge"); dom.estimateText = $("estimateText"); dom.compare1 = $("compare1"); dom.compare2 = $("compare2");
-      }
+      // Footer last page
+      Y=H-55; ln(mg,Y,rE,Y,"#374151",1); Y+=12;
+      txtC("تم التوليد آلياً عبر محرك سِراج لتمكين المواهب الوطنية | رؤية المملكة 2030",W/2,Y,13,"#6B7280","400");
 
-      let toastTimer;
-      function toast(t) { dom.toastText.textContent = t; dom.toast.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => dom.toast.classList.remove("show"), 1800); }
-
-      function setTab(tab) {
-        state.tab = tab;
-        dom.tabs.forEach((t) => { const isActive = t.dataset.tab === tab; t.classList.toggle("active", isActive); });
-        Object.entries(dom.views).forEach(([k, el]) => { el.style.display = k === tab ? "block" : "none"; });
-        const order = ["profile", "roles", "analysis", "report"]; const idx = order.indexOf(tab);
-        dom.steps.forEach((s, i) => { s.classList.toggle("active", i === idx); s.classList.toggle("done", state.completedSteps.has(order[i]) && i !== idx); });
-        if (tab === "analysis" && state.analysis) {
-          requestAnimationFrame(() => { setTimeout(() => { drawBarChart(dom.barChart, state.analysis.res.charts); drawRadarChart(dom.radarChart, state.analysis.res.charts); }, 80); });
+      // ═══ EXPORT ═══
+      try{
+        const{jsPDF}=window.jspdf;
+        const pdf=new jsPDF({orientation:"portrait",unit:"mm",format:"a4"});
+        for(let i=0;i<pages.length;i++){
+          if(i>0) pdf.addPage();
+          pdf.addImage(pages[i].toDataURL("image/jpeg",0.92),"JPEG",0,0,210,297);
         }
+        pdf.save("Siraj_Report_"+rep.id+".pdf");
+        toast("تم تصدير التقرير ("+pages.length+" صفحات) ✅");
+      }catch(err){
+        console.error("jsPDF error:",err);
+        const a=document.createElement("a"); a.download="Siraj_Report.png"; a.href=pages[0].toDataURL("image/png"); a.click();
+        toast("تم تصدير كصورة PNG ✅");
       }
+    }
 
-      function profileFromInputs() {
-        state.profile.major = dom.major.value.trim(); state.profile.eduLevel = dom.eduLevel.value; state.profile.experienceYears = clamp(Number(dom.experienceYears.value || 0), 0, 50);
-        state.profile.prefs = dom.prefs.value; state.profile.sector = dom.sector.value || "quasi";
-        state.profile.certs = dom.certs.value.split(",").map((s) => s.trim()).filter(Boolean); state.profile.tools = dom.tools.value.split(",").map((s) => s.trim()).filter(Boolean);
-      }
-      function loadProfileToInputs() {
-        dom.major.value = state.profile.major || ""; dom.eduLevel.value = state.profile.eduLevel || "UNI"; dom.experienceYears.value = String(state.profile.experienceYears || 0);
-        dom.prefs.value = state.profile.prefs || "balanced"; dom.sector.value = state.profile.sector || "quasi";
-        dom.certs.value = (state.profile.certs || []).join(", "); dom.tools.value = (state.profile.tools || []).join(", ");
-      }
-      function validateProfile() {
-        profileFromInputs(); let valid = true; const mf = $("fieldMajor");
-        if (state.profile.major.length < 2) { mf.classList.add("has-error"); valid = false; } else { mf.classList.remove("has-error"); }
-        if ((state.profile.skills || []).length === 0) valid = false; return valid;
-      }
-      function saveProfile() { profileFromInputs(); store.set(STORAGE_KEY_PROFILE, state.profile); state.completedSteps.add("profile"); toast(i18n.t("profileSaved")); }
-      function loadProfile() { const p = store.get(STORAGE_KEY_PROFILE, null); if (p) state.profile = { ...state.profile, ...p, evidence: p.evidence || {} }; loadProfileToInputs(); renderSkillsTable(); }
-      function resetProfile() { state.profile = { major: "", eduLevel: "UNI", experienceYears: 0, prefs: "balanced", sector: "quasi", certs: [], tools: [], skills: [], evidence: {} }; loadProfileToInputs(); renderSkillsTable(); store.set(STORAGE_KEY_PROFILE, state.profile); toast(i18n.t("profileReset")); }
+    function loadImg(src){
+      return new Promise((res,rej)=>{ const img=new Image(); img.onload=()=>res(img); img.onerror=rej; img.src=src; });
+    }
 
-      function addSkill(raw, level) {
-        const key = normalizeSkillName(raw);
-        if (!key || String(raw || "").trim().length < 2) { toast("اسم المهارة غير صالح"); return; }
-        const lvl = clamp(Number(level || 3), MIN_SKILL_LEVEL, MAX_SKILL_LEVEL);
-        const idx = state.profile.skills.findIndex((s) => s.key === key);
-        if (idx >= 0) { state.profile.skills[idx].level = Math.max(state.profile.skills[idx].level, lvl); state.profile.skills[idx].raw = raw; } else { state.profile.skills.push({ raw: raw.trim(), key, level: lvl }); }
-        renderSkillsTable(); store.set(STORAGE_KEY_PROFILE, state.profile);
-      }
-      function removeSkill(key) { state.profile.skills = state.profile.skills.filter((s) => s.key !== key); if (state.profile.evidence?.[key]) delete state.profile.evidence[key]; renderSkillsTable(); store.set(STORAGE_KEY_PROFILE, state.profile); }
-      function setSkillLevel(key, level) { const s = state.profile.skills.find((x) => x.key === key); if (s) s.level = clamp(Number(level), MIN_SKILL_LEVEL, MAX_SKILL_LEVEL); renderSkillsTable(); store.set(STORAGE_KEY_PROFILE, state.profile); }
+    // ═══════════════════════════════════
+    // EVENTS
+    // ═══════════════════════════════════
+    function bindEvents() {
+      dom.tabs.forEach(b=>b.addEventListener("click",()=>setTab(b.dataset.tab)));
+      dom.steps.forEach(s=>s.addEventListener("click",()=>setTab(s.dataset.step)));
 
-      function renderSkillsTable() {
-        const tb = dom.skillsBody; tb.innerHTML = "";
-        const sk = [...(state.profile.skills || [])].sort((a, b) => skillLabel(a.key).localeCompare(skillLabel(b.key)));
-        dom.skillTable.style.display = sk.length ? "table" : "none"; dom.skillsEmpty.style.display = sk.length ? "none" : "block";
-        for (const s of sk) {
-          const tr = document.createElement("tr");
-          const tdName = document.createElement("td"); const pill = document.createElement("span"); pill.className = "pill"; pill.textContent = s.raw || skillLabel(s.key); tdName.appendChild(pill);
-          const tdNorm = document.createElement("td"); tdNorm.style.cssText = "color:var(--muted);font-size:12px"; tdNorm.textContent = s.key.startsWith(CUSTOM_SKILL_PREFIX) ? "—" : skillLabel(s.key);
-          const tdLevel = document.createElement("td"); const rangeInput = document.createElement("input"); rangeInput.type = "range"; rangeInput.min = String(MIN_SKILL_LEVEL); rangeInput.max = String(MAX_SKILL_LEVEL); rangeInput.value = String(s.level); rangeInput.addEventListener("input", () => setSkillLevel(s.key, rangeInput.value)); const levelSpan = document.createElement("span"); levelSpan.style.cssText = "font-weight:800;margin-inline-start:8px"; levelSpan.textContent = String(s.level); rangeInput.addEventListener("input", () => { levelSpan.textContent = rangeInput.value; }); tdLevel.appendChild(rangeInput); tdLevel.appendChild(levelSpan);
-          const tdRemove = document.createElement("td"); const removeBtn = document.createElement("span"); removeBtn.className = "x"; removeBtn.textContent = "✕"; removeBtn.addEventListener("click", () => removeSkill(s.key)); tdRemove.appendChild(removeBtn);
-          tr.append(tdName, tdNorm, tdLevel, tdRemove); tb.appendChild(tr);
-        }
-      }
+      // Landing → App
+      $("startAppBtn").addEventListener("click",()=>{
+        const landing=$("landingPage"); const app=$("appContent");
+        landing.classList.add("fade-out-landing");
+        setTimeout(()=>{ landing.style.display="none"; app.style.display="block"; app.classList.add("fade-in-app");
+          saySiraj("siraj","مرحباً بك! أنا سِراج 🤖 مستشارك المهني الذكي.\n\nلنبدأ بتسجيل تخصصك ومهاراتك عشان نبني خطتك المهنية."); },500);
+      });
 
-      function renderRoles() {
-        dom.rolesGrid.innerHTML = "";
-        for (const r of ROLES) {
-          const div = document.createElement("div");
-          div.className = "role-card" + (state.selectedRoleId === r.id ? " active" : "");
-          div.innerHTML = `<h3>${escHtml(i18n.lang === "ar" ? r.ar : r.en)}</h3><div class="desc">${escHtml(i18n.lang === "ar" ? r.descAr : r.descEn)}</div><div class="role-meta">${(r.tools || []).slice(0, 4).map((k) => `<span class="tag">${escHtml(skillLabel(k))}</span>`).join("")}</div>`;
-          div.addEventListener("click", () => { state.selectedRoleId = r.id; renderRoles(); saySiraj("siraj", i18n.lang === "ar" ? `اخترت: ${r.ar}. اضغط "حلّل الجاهزية".` : `Selected: ${r.en}. Click "Analyze".`); });
-          dom.rolesGrid.appendChild(div);
-        }
-        [dom.compare1, dom.compare2].forEach((sel, si) => { sel.innerHTML = ""; ROLES.forEach((r, i) => { const o = document.createElement("option"); o.value = r.id; o.textContent = i18n.lang === "ar" ? r.ar : r.en; if (si === 1 && i === 1) o.selected = true; sel.appendChild(o); }); });
-      }
+      // Skills
+      $("addSkillBtn").addEventListener("click",()=>{ addSkill(dom.skillName.value,dom.skillLevel.value); dom.skillName.value=""; dom.skillName.focus(); });
+      dom.skillName.addEventListener("keydown",e=>{ if(e.key==="Enter") { e.preventDefault(); $("addSkillBtn").click(); } });
 
-      function autoPickBestRole() { if (!validateProfile()) { toast(i18n.t("fillFirst")); return; } const scores = ROLES.map((r) => ({ id: r.id, score: analyzeFallback(state.profile, r).score })).sort((a, b) => b.score - a.score); state.selectedRoleId = scores[0]?.id || ROLES[0].id; renderRoles(); toast(i18n.t("autoPicked")); }
-
-      // ═══════════════════════════════════
-      // SCORING ENGINE (Fallback / Local AI)
-      // ═══════════════════════════════════
-      function sectorWeightMult(sector, roleId, skillKey) {
-        let m = 1;
-        if (sector === "gov" && ["requirements", "process", "stakeholder", "communication"].includes(skillKey)) m *= 1.25;
-        if (sector === "private" && ["coding", "devops", "cloud", "api"].includes(skillKey)) m *= 1.2;
-        if (sector === "quasi" && ["communication", "stakeholder", "process"].includes(skillKey)) m *= 1.1;
-        return m;
-      }
-
-      function analyzeFallback(profile, role) {
-        const map = new Map();
-        for (const s of profile.skills || []) { const k = s.key; if (k) { map.set(k, Math.max(map.get(k) || 0, clamp(Number(s.level || 1), 1, 5))); } }
-        
-        const required = role.required || [];
-        const reqWeights = required.map((x) => (x.weight || 0) * sectorWeightMult(profile.sector || "quasi", role.id, x.skill));
-        const totalReqWeight = reqWeights.reduce((a, x) => a + x, 0) || 1;
-
-        let wSumReq = 0;
-        const perSkill = required.map((req, idx) => {
-          const uLvl = map.get(req.skill) || 0; const rLvl = clamp(req.level, 1, 5); const achieved = Math.min(1, uLvl / rLvl); const gap = Math.max(0, rLvl - uLvl); const w = reqWeights[idx] || 0; const impact = w * gap; wSumReq += w * achieved;
-          return { skill: req.skill, reqLevel: rLvl, userLevel: Math.round(uLvl * 10) / 10, weight: w, achieved, gap, impact };
-        });
-
-        const score = round(100 * Math.min(1, wSumReq / totalReqWeight));
-        const missing = perSkill.filter((x) => x.gap > 0 || x.achieved < 0.75).sort((a, b) => b.impact - a.impact).map((x) => ({ skill: x.skill, label: skillLabel(x.skill), reqLevel: x.reqLevel, userLevel: x.userLevel, impact: round(x.impact * 10) / 10, evidence: profile.evidence?.[x.skill] || null }));
-        const topReq = [...perSkill].sort((a, b) => b.weight - a.weight).slice(0, 7).map((x) => ({ key: x.skill, label: skillLabel(x.skill), req: x.reqLevel, user: Math.min(x.userLevel, 5) }));
-        
-        const roadmap = [
-          {week: 1, phase: "تأسيس", focus: [missing[0]?.label || "المهارات"], tasks: [{title: "مراجعة أساسيات", resource: "منصة سطر"}], mini: "مهمة مصغرة", quiz: "تقييم"},
-          {week: 2, phase: "تطبيق", focus: [missing[0]?.label || "المهارات"], tasks: [{title: "بناء مشروع مصغر", resource: "GitHub"}], mini: "مهمة مصغرة", quiz: "تقييم"}
+      // Demo
+      $("loadSampleBtn").addEventListener("click",()=>{
+        dom.major.value="نظم المعلومات"; dom.experienceYears.value="1"; dom.sector.value="quasi";
+        dom.certs.value="Google Data Analytics";
+        state.profile.major="نظم المعلومات"; state.profile.eduLevel="UNI"; state.profile.experienceYears=1; state.profile.sector="quasi";
+        state.profile.certs=["Google Data Analytics"];
+        state.profile.skills=[
+          {raw:"SQL",key:"sql",level:3},{raw:"Power BI",key:"powerbi",level:4},{raw:"Excel",key:"excel",level:4},
+          {raw:"تحليل المتطلبات",key:"requirements",level:2},{raw:"الإحصاء",key:"statistics",level:2},{raw:"التواصل",key:"communication",level:3},
         ];
-        const projects = [{title: "تحليل بيانات القطاع الخاص", focusSkill: missing[0]?.label || "عام", objective: "تطبيق عملي سعودي", dataset: "بيانات مفتوحة", architecture: "تنظيف ثم تحليل", milestones: ["تجهيز", "تحليل"], deliverables: ["تقرير", "كود"], rubric: [{k: "الجودة", v: "0-5"}]}];
+        renderSkillsTable(); state.selectedRoleId="data_analyst"; renderRoles();
+        toast("تم تحميل بيانات الديمو بنجاح 🚀");
+      });
 
-        return { score, perSkill, missing, roadmap, projects, charts: topReq, estWeeks: score >= 80 ? 0 : 4, confidence: {score: 75, note: "تحليل محلي معتمد"} };
-      }
+      // Profile actions
+      $("saveProfileBtn").addEventListener("click",saveProfile);
+      $("resetProfileBtn").addEventListener("click",resetProfile);
+      $("nextStepBtn").addEventListener("click",()=>{
+        if(!validateProfile()) { toast(i18n.t("fillFirst")); return; }
+        saveProfile(); setTab("roles"); window.scrollTo({top:0,behavior:"smooth"});
+      });
 
-      // ═══════════════════════════════════
-      // RENDER ANALYSIS
-      // ═══════════════════════════════════
-      function renderAnalysis(res, role) {
-        dom.scoreValue.textContent = String(res.score); dom.scoreBar.style.width = res.score + "%";
-        dom.roleValue.textContent = i18n.lang === "ar" ? role.ar : role.en; dom.roleNote.textContent = i18n.lang === "ar" ? role.descAr : role.descEn;
-        dom.confidenceValue.textContent = String(res.confidence?.score || 85); dom.confidenceBar.style.width = (res.confidence?.score || 85) + "%"; dom.confidenceNote.textContent = res.confidence?.note || "تحليل مبني على محرك سراج";
-        if (res.estWeeks > 0) { dom.estimateBadge.style.display = "inline-flex"; dom.estimateText.textContent = `~${res.estWeeks} أسبوع للوصول للجاهزية`; } else { dom.estimateBadge.style.display = "none"; }
+      // Roles
+      $("autoPickBtn").addEventListener("click",autoPickBestRole);
+      $("compareBtn").addEventListener("click",()=>{ dom.comparePanel.style.display=dom.comparePanel.style.display==="none"?"block":"none"; });
+      $("runCompareBtn").addEventListener("click",runComparison);
 
-        // 🌟 إضافة ختم رؤية 2030 الديناميكي 🌟
-        const visionProgram = role.id === "data_analyst" || role.id === "data_scientist" ? "برنامج التحول الوطني (الرقمنة)" : role.id === "cyber_analyst" ? "الاستراتيجية الوطنية للأمن السيبراني" : "برنامج تنمية القدرات البشرية";
-        const existingBadge = dom.roleValue.parentElement.querySelector('.vision-badge');
-        if(existingBadge) existingBadge.remove();
-        const badgeContainer = document.createElement('div'); badgeContainer.className = 'vision-badge';
-        badgeContainer.innerHTML = `<div style="margin-top:8px; padding:6px 10px; background:rgba(16, 185, 129, 0.1); border:1px solid rgba(16, 185, 129, 0.3); border-radius:8px; display:inline-block;"><span style="color:#10B981; font-weight:800; font-size:11px;">🇸🇦 متوافق مع: ${visionProgram}</span></div>`;
-        dom.roleValue.parentElement.appendChild(badgeContainer);
+      // Analyze (Phase 2.1 — Make.com)
+      $("analyzeBtn").addEventListener("click",()=>{
+        if(!validateProfile()) { toast(i18n.t("fillFirst")); setTab("profile"); return; }
+        if(!state.selectedRoleId) { toast(i18n.t("pickRole")); setTab("roles"); return; }
+        const role=ROLES.find(r=>r.id===state.selectedRoleId); if(!role) return;
 
-        dom.missingList.innerHTML = "";
-        if (!res.missing.length) { dom.missingList.innerHTML = `<li><span class="warn">جاهز جدًا — ركّز على مشاريع قوية!</span></li>`; } 
-        else {
-          for (const m of res.missing.slice(0, 12)) {
-            const ev = state.profile.evidence?.[m.skill];
-            dom.missingList.innerHTML += `<li style="margin-bottom:8px;"><div class="miss-row"><div class="miss-text"><b>${m.label}</b> — مطلوب ${m.reqLevel}/5, مستواك ${m.userLevel}/5 <div class="miss-ev">${ev?.url ? `<a class="evlink" href="${ev.url}" target="_blank">رابط الإثبات</a>` : `<span class="evnone">بدون إثبات</span>`}</div></div><div class="miss-actions"><button class="btn btn-ghost btn-xs" onclick="openEvidenceModal('${m.skill}')">${ev ? "تعديل إثبات" : "أضف إثبات"}</button></div></div></li>`;
-          }
-        }
+        const btn=$("analyzeBtn"); const origText=btn.innerHTML;
+        btn.innerHTML="💡 جاري تحليل البيانات بالذكاء الاصطناعي..."; btn.disabled=true; btn.classList.add("tech-bulb-loading");
 
-        dom.roadmap.innerHTML = res.roadmap.map(w => `<div class="week"><div class="week-head"><div class="w">الأسبوع ${w.week} <span class="phase-tag">${w.phase}</span></div><div class="focus">${w.focus.join(" + ")}</div></div><ul>${w.tasks.map(t => `<li>${escHtml(t.title)} <span style="color:var(--muted)">— ${escHtml(t.resource)}</span></li>`).join("")}</ul></div>`).join("");
-        dom.projects.innerHTML = res.projects.map(p => `<div class="project"><h5>${escHtml(p.title)}</h5><div class="small" style="margin-top:6px">${escHtml(p.objective)}</div></div>`).join("");
+        (async()=>{
+          try {
+            let res=analyzeFallback(state.profile,role);
+            const payload={profile:state.profile,roleId:role.id,roleName:role.ar,sector:state.profile.sector||"quasi"};
 
-        try { drawBarChart(dom.barChart, res.charts); drawRadarChart(dom.radarChart, res.charts); } catch (e) { console.error(e); }
-        state.completedSteps.add("analysis");
-      }
+            // Try Make.com webhook
+            if(ANALYSIS_WEBHOOK.includes("hook.")) {
+              try {
+                const aiResp=await fetch(ANALYSIS_WEBHOOK,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+                if(aiResp.ok) {
+                  const aiData=await aiResp.json();
+                  // Merge AI results with local (AI enriches, local is fallback)
+                  if(aiData.score!==undefined) res.score=clamp(aiData.score,0,100);
+                  if(aiData.missing?.length) res.missing=aiData.missing;
+                  if(aiData.roadmap?.length) res.roadmap=aiData.roadmap;
+                  if(aiData.projects?.length) res.projects=aiData.projects;
+                  if(aiData.estWeeks!==undefined) res.estWeeks=aiData.estWeeks;
+                  if(aiData.tip) res.aiTip=aiData.tip;
+                }
+              } catch(err) { console.warn("Analysis webhook failed, using local engine"); }
+            }
 
-      // ═══════════════════════════════════
-      // CHARTS (Canvas)
-      // ═══════════════════════════════════
-      function setupCanvas(canvas) { const rect = canvas.parentElement.getBoundingClientRect(); const dpr = window.devicePixelRatio || 1; const w = Math.max(280, rect.width - 24); const h = 280; canvas.width = w * dpr; canvas.height = h * dpr; canvas.style.width = w + "px"; canvas.style.height = h + "px"; const ctx = canvas.getContext("2d"); ctx.scale(dpr, dpr); return { ctx, W: w, H: h }; }
-      function roundRect(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y); ctx.quadraticCurveTo(x + w, y, x + w, y + r); ctx.lineTo(x + w, y + h - r); ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h); ctx.lineTo(x + r, y + h); ctx.quadraticCurveTo(x, y + h, x, y + h - r); ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y); ctx.closePath(); }
-      function drawBarChart(canvas, data) {
-        if (!data || !data.length) return; const { ctx, W, H } = setupCanvas(canvas); ctx.clearRect(0, 0, W, H); const pad = { t: 50, b: 60, l: 50, r: 20 }; const cW = W - pad.l - pad.r; const cH = H - pad.t - pad.b; const n = data.length; const gW = cW / n; const bW = gW * 0.28;
-        ctx.strokeStyle = "#2a3530"; ctx.lineWidth = 1; for (let i = 1; i <= MAX_SKILL_LEVEL; i++) { const y = pad.t + cH - cH * (i / MAX_SKILL_LEVEL); ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(W - pad.r, y); ctx.stroke(); ctx.fillStyle = "#6b7c73"; ctx.font = "11px system-ui"; ctx.fillText(String(i), pad.l - 20, y + 4); }
-        ctx.fillStyle = "#e8ede9"; ctx.font = "bold 14px system-ui"; ctx.fillText("مطابقة المهارات", pad.l, 30);
-        for (let i = 0; i < n; i++) { const d = data[i]; const x0 = pad.l + i * gW + gW / 2; const uH = cH * (d.user / MAX_SKILL_LEVEL); const rH = cH * (d.req / MAX_SKILL_LEVEL); ctx.fillStyle = "rgba(59, 130, 246, 0.12)"; ctx.beginPath(); roundRect(ctx, x0 - bW - 4, pad.t + cH - rH, bW, rH, 4); ctx.fill(); const grad = ctx.createLinearGradient(0, pad.t + cH - uH, 0, pad.t + cH); grad.addColorStop(0, "#3B82F6"); grad.addColorStop(1, "#1D4ED8"); ctx.fillStyle = grad; ctx.beginPath(); roundRect(ctx, x0 + 4, pad.t + cH - uH, bW, uH, 4); ctx.fill(); ctx.fillStyle = "#a3b0a8"; ctx.font = "11px system-ui"; const lbl = d.label.length > 10 ? d.label.slice(0, 10) + "…" : d.label; ctx.save(); ctx.translate(x0, H - pad.b + 16); ctx.rotate(-0.4); ctx.fillText(lbl, -20, 0); ctx.restore(); }
-        ctx.fillStyle = "#3B82F6"; roundRect(ctx, W - 160, 14, 12, 12, 3); ctx.fill(); ctx.fillStyle = "#a3b0a8"; ctx.font = "11px system-ui"; ctx.fillText("مستواك", W - 142, 24); ctx.fillStyle = "rgba(59, 130, 246, 0.15)"; roundRect(ctx, W - 90, 14, 12, 12, 3); ctx.fill(); ctx.fillStyle = "#a3b0a8"; ctx.fillText("المطلوب", W - 72, 24);
-      }
-      function drawRadarChart(canvas, data) {
-        if (!data || !data.length) return; const { ctx, W, H } = setupCanvas(canvas); ctx.clearRect(0, 0, W, H); const cx = W / 2; const cy = H / 2 + 16; const R = Math.min(W, H) * 0.32; const n = data.length;
-        for (let r = 1; r <= MAX_SKILL_LEVEL; r++) { const rr = (R * r) / MAX_SKILL_LEVEL; ctx.strokeStyle = "#2a3530"; ctx.lineWidth = 1; ctx.beginPath(); for (let i = 0; i < n; i++) { const a = (Math.PI * 2 * i) / n - Math.PI / 2; const x = cx + Math.cos(a) * rr; const y = cy + Math.sin(a) * rr; i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); } ctx.closePath(); ctx.stroke(); }
-        for (let i = 0; i < n; i++) { const a = (Math.PI * 2 * i) / n - Math.PI / 2; ctx.strokeStyle = "#2a3530"; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.cos(a) * R, cy + Math.sin(a) * R); ctx.stroke(); const lx = cx + Math.cos(a) * (R + 16); const ly = cy + Math.sin(a) * (R + 16); ctx.fillStyle = "#a3b0a8"; ctx.font = "10px system-ui"; const lbl = data[i].label.length > 10 ? data[i].label.slice(0, 10) + "…" : data[i].label; ctx.fillText(lbl, lx - 20, ly + 4); }
-        function poly(vals, fill, stroke) { ctx.beginPath(); for (let i = 0; i < n; i++) { const a = (Math.PI * 2 * i) / n - Math.PI / 2; const rr = R * (vals[i] / MAX_SKILL_LEVEL); const x = cx + Math.cos(a) * rr; const y = cy + Math.sin(a) * rr; i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); } ctx.closePath(); ctx.fillStyle = fill; ctx.strokeStyle = stroke; ctx.lineWidth = 2; ctx.fill(); ctx.stroke(); }
-        poly(data.map((d) => d.req), "rgba(59, 130, 246, 0.06)", "#344038"); poly(data.map((d) => d.user), "rgba(59, 130, 246, 0.18)", "#3B82F6");
-      }
+            state.analysis={role,res}; renderAnalysis(res,role); setTab("analysis");
+            const tip=res.aiTip||`اكتمل التحليل! نسبة جاهزيتك لـ "${role.ar}" هي ${res.score}/100.`;
+            saySiraj("siraj",tip);
+          } catch(e) { toast(i18n.t("analysisError")); console.error(e); }
+          finally { btn.innerHTML=origText; btn.disabled=false; btn.classList.remove("tech-bulb-loading"); }
+        })();
+      });
 
-      // ═══════════════════════════════════
-      // EVIDENCE MODAL
-      // ═══════════════════════════════════
-      window.openEvidenceModal = function(skillKey) {
-        const current = state.profile.evidence?.[skillKey] || {};
-        const url = prompt("أدخل رابط الإثبات (مثال: GitHub/Drive):", current.url || "");
-        if (url !== null) {
-          if (!state.profile.evidence) state.profile.evidence = {};
-          state.profile.evidence[skillKey] = { url: url.trim(), note: "", updatedAt: nowISO() };
-          store.set(STORAGE_KEY_PROFILE, state.profile); toast(i18n.t("evidenceSaved"));
-          if (state.analysis) renderAnalysis(state.analysis.res, state.analysis.role);
-        }
-      }
+      // Report
+      $("saveReportBtn").addEventListener("click",()=>{
+        const rep=buildReport(); if(!rep) return;
+        state.reportId=rep.id; state.lastReport=rep;
+        // Actually save to localStorage
+        const reports=store.get(STORAGE_KEY_REPORTS,{});
+        reports[rep.id]=rep;
+        store.set(STORAGE_KEY_REPORTS,reports);
+        renderReport(rep); setTab("report"); toast("تم حفظ التقرير ✅");
+      });
 
-      // ═══════════════════════════════════
-      // CHAT (تأثير الآلة الكاتبة)
-      // ═══════════════════════════════════
-      function saySiraj(sender, text) {
-        const w = document.createElement("div");
-        w.className = "msg " + (sender === "siraj" ? "msg-siraj" : "msg-user");
-        const b = document.createElement("div");
-        b.className = "bubble";
-        w.appendChild(b);
-        dom.dialog.appendChild(w);
-        dom.dialog.scrollTop = dom.dialog.scrollHeight;
+      $("downloadPdfBtn").addEventListener("click",()=>{
+        if(!state.analysis) return toast("حلّل الجاهزية أولاً");
+        const rep=state.lastReport||buildReport();
+        if(rep) downloadPDF(rep);
+      });
 
-        if (sender === "user") { b.textContent = text; return; }
+      $("downloadJsonBtn").addEventListener("click",()=>{
+        const rep=state.lastReport||buildReport(); if(!rep) return toast("لا يوجد تقرير");
+        const blob=new Blob([JSON.stringify(rep,null,2)],{type:"application/json"});
+        const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=`Siraj_Report_${rep.id}.json`; a.click(); URL.revokeObjectURL(a.href);
+        toast("تم تحميل JSON ✅");
+      });
 
-        let i = 0; b.textContent = "";
-        function typeWriter() {
-          if (i < text.length) {
-            b.textContent += text.charAt(i); i++;
-            dom.dialog.scrollTop = dom.dialog.scrollHeight;
-            setTimeout(typeWriter, 20);
-          }
-        }
-        typeWriter();
-      }
+      // Share (Phase 1.1)
+      $("shareBtn").addEventListener("click",()=>{
+        const data=state.analysis?{s:state.analysis.res.score,r:state.selectedRoleId}:{};
+        const url=window.location.origin+window.location.pathname+"#"+btoa(JSON.stringify(data));
+        navigator.clipboard.writeText(url).then(()=>toast(i18n.t("shareCopied"))).catch(()=>toast("تعذر النسخ"));
+      });
 
-      function handleChat(text) {
-        const raw = (text || "").trim(); if (!raw) return;
-        saySiraj("user", raw); const t = raw.toLowerCase(); 
-        if (t.includes("ناقصني") || t.includes("وش ناقصني")) {
-          if (!state.analysis) { saySiraj("siraj", "حلّل جاهزيتك أولاً ثم اسألني."); return; }
-          saySiraj("siraj", `أهم الفجوات: ${state.analysis.res.missing.slice(0,2).map((m) => m.label).join("، ")}. ركّز عليها.`);
-          return;
-        }
-        if (t.includes("أفضل وظيفة")) { autoPickBestRole(); setTab("roles"); saySiraj("siraj", "تم اختيار أفضل وظيفة تناسب مهاراتك آلياً."); return; }
-        saySiraj("siraj", "أقدر أساعدك في اختيار الوظيفة أو تحليل الفجوات، استخدم الأزرار السريعة.");
-      }
+      $("copyLinkBtn").addEventListener("click",()=>{
+        const rep=state.lastReport; if(!rep) return toast("احفظ التقرير أولاً");
+        const url=window.location.origin+window.location.pathname+"#report="+rep.id;
+        navigator.clipboard.writeText(url).then(()=>toast(i18n.t("shareCopied"))).catch(()=>toast("تعذر النسخ"));
+      });
 
-      // ═══════════════════════════════════
-      // PDF (التقرير التنفيذي الفاخر)
-      // ═══════════════════════════════════
-      function downloadPDF(rep) {
-        if (typeof html2pdf === "undefined") { toast("مكتبة PDF غير متوفرة."); return; }
-        toast("جاري تجهيز التقرير التنفيذي...");
-        const printDiv = document.createElement("div");
-        printDiv.style.cssText = "background:#fff;color:#000;padding:40px;font-family:sans-serif;width:800px;position:absolute;top:-9999px";
-        printDiv.style.direction = rep.lang === "ar" ? "rtl" : "ltr";
-        
-        const sectorName = rep.profile.sector === "gov" ? "حكومي" : rep.profile.sector === "private" ? "خاص" : "شبه حكومي";
-        let missingHtml = (rep.result.missing || []).map(m => `<li style="margin-bottom: 12px; background: #F9FAFB; padding: 10px 16px; border-radius: 8px; border: 1px solid #E5E7EB;"><b>${escHtml(m.label)}</b> (مطلوب: ${m.reqLevel} — مستواك: ${m.userLevel})</li>`).join("");
+      // Language
+      $("langBtn").addEventListener("click",()=>{
+        i18n.lang=i18n.lang==="ar"?"en":"ar";
+        document.documentElement.lang=i18n.lang; document.documentElement.dir=i18n.lang==="ar"?"rtl":"ltr";
+        $("langBtn").textContent=i18n.lang==="ar"?"EN":"عربي";
+        renderRoles(); renderSkillsTable();
+        if(state.analysis) renderAnalysis(state.analysis.res,state.analysis.role);
+      });
 
-        printDiv.innerHTML = `
-          <div style="border: 8px solid #0B1120; padding: 40px; border-radius: 16px; background: #fff; position: relative;">
-            <div style="text-align:center; border-bottom: 3px solid #3B82F6; padding-bottom: 24px; margin-bottom: 30px;">
-              <h1 style="color: #0B1120; margin: 0; font-size: 32px; font-weight: 900; letter-spacing: -1px;">سِراج <span style="color:#3B82F6">SIRAJ</span></h1>
-              <h2 style="color: #3B82F6; margin: 8px 0 0 0; font-size: 20px;">التقرير الاستشاري للجاهزية المهنية</h2>
-              <p style="color: #6B7280; margin-top: 12px; font-size: 12px; font-family: monospace;">
-                REF: ${escHtml(rep.id).toUpperCase()} | DATE: ${new Date(rep.createdAt).toLocaleDateString("ar-SA")}
-              </p>
-            </div>
-            <div style="background: #F3F4F6; padding: 24px; border-radius: 12px; border-right: 6px solid #3B82F6; margin-bottom: 30px;">
-              <h3 style="margin:0 0 16px 0; color:#111; font-size:18px;">الملخص التنفيذي</h3>
-              <table style="width: 100%; text-align: right; font-size: 15px;">
-                <tr><td style="padding: 8px 0; border-bottom:1px solid #E5E7EB;"><b>الوظيفة المستهدفة:</b> ${escHtml(rep.role?.name || "")}</td><td style="padding: 8px 0; border-bottom:1px solid #E5E7EB;"><b>القطاع:</b> ${escHtml(sectorName)}</td></tr>
-                <tr><td style="padding: 8px 0;"><b>مؤشر الجاهزية:</b> <span style="color:#10B981; font-weight:900; font-size: 18px;">${rep.result.score}%</span></td><td style="padding: 8px 0;"><b>الوقت للجاهزية:</b> <b>${rep.result.estWeeks || 0}</b> أسابيع</td></tr>
-              </table>
-            </div>
-            <h3 style="color:#0B1120; font-size:20px; border-bottom: 2px solid #E5E7EB; padding-bottom: 10px; margin-bottom: 16px;">تحليل فجوة المهارات</h3>
-            <ul style="font-size: 15px; line-height: 2; color: #374151; margin-bottom: 30px; list-style-type: none; padding:0;">${missingHtml}</ul>
-            <div style="margin-top: 50px; text-align: center; color: #9CA3AF; font-size: 11px; border-top: 1px solid #E5E7EB; padding-top: 20px;">تم توليد هذا التقرير آلياً عبر محرك سِراج لتمكين المواهب الوطنية وفق متطلبات رؤية المملكة 2030.</div>
-          </div>
-        `;
-        document.body.appendChild(printDiv);
-        html2pdf().set({ margin: 0.5, filename: `Siraj_Executive_Report_${rep.id}.pdf`, jsPDF: { unit: "in", format: "a4", orientation: "portrait" } }).from(printDiv).save().then(() => { toast(i18n.t("pdfDone")); document.body.removeChild(printDiv); });
-      }
+      // Evidence modal
+      $("evidenceSaveBtn").addEventListener("click",saveEvidence);
+      $("evidenceCancelBtn").addEventListener("click",closeEvidenceModal);
+      $("evidenceModal").addEventListener("click",e=>{ if(e.target===$("evidenceModal")) closeEvidenceModal(); });
 
-      // ═══════════════════════════════════
-      // EVENTS
-      // ═══════════════════════════════════
-      function bindEvents() {
-        dom.tabs.forEach((b) => b.addEventListener("click", () => setTab(b.dataset.tab)));
-        dom.steps.forEach((s) => s.addEventListener("click", () => setTab(s.dataset.step)));
+      // Chat
+      $("chatSendBtn").addEventListener("click",()=>{ handleChat(dom.chatInput.value); dom.chatInput.value=""; dom.chatInput.focus(); });
+      dom.chatInput.addEventListener("keydown",e=>{ if(e.key==="Enter") { e.preventDefault(); $("chatSendBtn").click(); } });
+      document.querySelectorAll(".quick-btn").forEach(b=>b.addEventListener("click",()=>handleChat(b.dataset.q)));
+    }
 
-        // 🌟 تفعيل زر صفحة الترحيب والانتقال للتطبيق 🌟
-        const startBtn = $("startAppBtn");
-        if (startBtn) {
-          startBtn.addEventListener("click", () => {
-            $("landingPage").style.display = "none";
-            $("appContent").style.display = "block";
-            saySiraj("siraj", "مرحباً بك! أنا سِراج 🤖. لنبدأ بتسجيل تخصصك ومهاراتك الحالية لنبني خطتك المهنية وتكون جاهزاً لسوق العمل.");
-          });
-        }
-
-        $("addSkillBtn").addEventListener("click", () => { addSkill(dom.skillName.value, dom.skillLevel.value); dom.skillName.value = ""; dom.skillName.focus(); });
-        dom.skillName.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); $("addSkillBtn").click(); } });
-
-        // تجهيز الديمو بضغطة زر
-        $("loadSampleBtn").addEventListener("click", () => {
-          state.profile.major = "نظم المعلومات"; state.profile.eduLevel = "UNI"; state.profile.experienceYears = 0; state.profile.sector = "quasi";
-          state.profile.skills = [{ raw: "SQL", key: "sql", level: 3 }, { raw: "Power BI", key: "powerbi", level: 4 }, { raw: "تحليل المتطلبات", key: "requirements", level: 2 }];
-          loadProfileToInputs(); renderSkillsTable(); state.selectedRoleId = "data_analyst"; renderRoles(); toast("تم تجهيز ملف طالب نظم معلومات");
-        });
-
-        $("saveProfileBtn").addEventListener("click", saveProfile); $("resetProfileBtn").addEventListener("click", resetProfile);
-        $("autoPickBtn").addEventListener("click", autoPickBestRole);
-
-        // 🌟 زر التحليل (مع الإضاءة و Make.com Fallback) 🌟
-        $("analyzeBtn").addEventListener("click", () => {
-          if (!validateProfile()) { toast(i18n.t("fillFirst")); setTab("profile"); return; }
-          if (!state.selectedRoleId) { toast(i18n.t("pickRole")); setTab("roles"); return; }
-          const role = ROLES.find((r) => r.id === state.selectedRoleId); if (!role) return;
-
-          const btn = $("analyzeBtn"); const originalText = btn.innerHTML;
-          btn.innerHTML = "💡 جاري إضاءة المنارة وتحليل البيانات بالذكاء الاصطناعي...";
-          btn.disabled = true; btn.classList.add("tech-bulb-loading");
-
-          setTimeout(async () => {
-            try {
-              // تجهيز الـ Fallback المحلي كـ Backup
-              let res = analyzeFallback(state.profile, role);
-              const payload = { profile: state.profile, roleId: role.id, roleName: role.ar, sector: state.profile.sector || "quasi" };
-              
-              // إذا تم ضبط رابط Make.com، حاول استدعائه
-              if (AI_WEBHOOK_URL.includes("hook.")) {
-                try {
-                  const aiResp = await fetch(AI_WEBHOOK_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
-                  if (aiResp.ok) { const aiData = await aiResp.json(); res = { ...res, score: aiData.score || res.score, missing: aiData.missing || res.missing, roadmap: aiData.roadmap || res.roadmap, projects: aiData.projects || res.projects, estWeeks: aiData.estWeeks !== undefined ? aiData.estWeeks : res.estWeeks }; }
-                } catch (err) { console.warn("Make webhook failed, using local AI engine"); toast(i18n.t("analysisError")); }
-              }
-              
-              state.analysis = { role, res }; renderAnalysis(res, role); setTab("analysis");
-              saySiraj("siraj", `اكتمل التحليل! نسبة جاهزيتك لـ "${role.ar}" هي ${res.score}/100.`);
-            } catch (e) { toast(i18n.t("analysisError")); } 
-            finally { btn.innerHTML = originalText; btn.disabled = false; btn.classList.remove("tech-bulb-loading"); }
-          }, 2500); // 2.5 ثانية لعرض تأثير المنارة قبل ظهور النتيجة
-        });
-
-        $("saveReportBtn").addEventListener("click", () => {
-          if (!state.analysis) return;
-          const rep = { id: uid(), createdAt: nowISO(), lang: i18n.lang, profile: state.profile, role: { id: state.analysis.role.id, name: state.analysis.role.ar }, result: state.analysis.res };
-          state.reportId = rep.id; store.get(STORAGE_KEY_REPORTS, {})[rep.id] = rep; toast("تم حفظ التقرير"); setTab("report");
-        });
-
-        $("downloadPdfBtn").addEventListener("click", () => {
-          if (!state.analysis) return toast("يرجى تحليل الجاهزية أولاً");
-          const rep = { id: state.reportId || uid(), createdAt: nowISO(), lang: i18n.lang, profile: state.profile, role: state.analysis.role, result: state.analysis.res };
-          downloadPDF(rep);
-        });
-
-        $("chatSendBtn").addEventListener("click", () => { handleChat(dom.chatInput.value); dom.chatInput.value = ""; dom.chatInput.focus(); });
-        dom.chatInput.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); $("chatSendBtn").click(); } });
-        document.querySelectorAll(".quick-btn").forEach((b) => b.addEventListener("click", () => handleChat(b.dataset.q)));
-      }
-
-      function init() { cacheDom(); bindEvents(); loadProfile(); renderRoles(); setTab("profile"); }
-      init();
-    })();
+    // ═══════════════════════════════════
+    // INIT
+    // ═══════════════════════════════════
+    function init() { cacheDom(); bindEvents(); loadProfile(); renderRoles(); setTab("profile"); }
+    init();
+    
+  })();
+  
   </script>
 </body>
 </html>
