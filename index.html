@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-api="">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>سِراج — مستشار المسار الوظيفي</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;600;700;800;900&family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #0B1120; --bg2: #111827; --card: #1F2937; --card2: #374151;
+      --text: #F3F4F6; --text2: #9CA3AF; --muted: #6B7280;
+      --line: #374151; --line2: #4B5563;
+      --primary: #3B82F6; --primary2: #2563EB; --primary3: #1D4ED8;
+      --primaryDim: rgba(59, 130, 246, 0.1); --primaryDim2: rgba(59, 130, 246, 0.2);
+      --warn: #F59E0B; --danger: #EF4444; --success: #10B981;
+      --shadow: 0 20px 60px rgba(0,0,0,0.4);
+      --radius: 16px; --radiusSm: 10px;
+      --font: 'Noto Kufi Arabic', 'Space Grotesk', sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body { 
+      font-family: var(--font); background: var(--bg); color: var(--text); 
+      min-height: 100vh; overflow-x: hidden; 
+    }
+
+    body::before {
+      content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background:
+        radial-gradient(ellipse 800px 600px at 20% 10%, rgba(59, 130, 246, 0.04), transparent),
+        radial-gradient(ellipse 600px 800px at 80% 90%, rgba(37, 99, 235, 0.03), transparent);
+    }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg2); }
+    ::-webkit-scrollbar-thumb { background: var(--line2); border-radius: 99px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--primary3); }
+
+    .header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(11, 17, 32, 0.85); backdrop-filter: blur(20px) saturate(1.4); -webkit-backdrop-filter: blur(20px) saturate(1.4);
+      border-bottom: 1px solid var(--line); padding: 0 24px; height: 64px;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    .header-left { display: flex; align-items: center; gap: 14px; min-width: 0; }
+    .logo {
+      width: 40px; height: 40px; border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary), var(--primary3));
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+    }
+    .brand-title { font-size: 17px; font-weight: 900; letter-spacing: -.01em; color: var(--text); white-space: nowrap; }
+    .brand-sub { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .header-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+    .btn {
+      border: none; padding: 9px 16px; font-size: 13px; font-weight: 700;
+      border-radius: 10px; cursor: pointer; font-family: var(--font);
+      transition: all .15s ease; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn:active { transform: scale(.97); }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary2); box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+    .btn-ghost { background: rgba(255,255,255,0.06); color: var(--text2); border: 1px solid var(--line); }
+    .btn-ghost:hover { background: rgba(255,255,255,0.1); border-color: var(--line2); }
+    .btn-soft { background: var(--card2); color: var(--text2); border: 1px solid var(--line); }
+    .btn-soft:hover { background: var(--line); color: var(--text); }
+    .chip { font-size: 10px; font-weight: 800; letter-spacing: .08em; padding: 4px 10px; border-radius: 6px; background: var(--primaryDim); color: var(--primary); border: 1px solid var(--primaryDim2); text-transform: uppercase; }
+    .btn-xs { padding: 6px 10px; font-size: 11px; border-radius: 8px; }
+
+    .page { position: relative; z-index: 1; padding: 24px 20px 60px; display: flex; justify-content: center; }
+    .wrap { width: 100%; max-width: 1240px; }
+    .grid { display: grid; grid-template-columns: 1.25fr .75fr; gap: 20px; margin-top: 20px; }
+    @media(max-width:1024px) { .grid { grid-template-columns: 1fr; } }
+
+    .stepper { display: flex; align-items: center; gap: 0; margin-bottom: 24px; padding: 16px 20px; background: var(--bg2); border-radius: 14px; border: 1px solid var(--line); }
+    .step { display: flex; align-items: center; gap: 10px; flex: 1; position: relative; cursor: pointer; padding: 8px 0; }
+    .step::after { content: ''; position: absolute; left: -50%; right: 50%; top: 50%; height: 2px; background: var(--line); z-index: 0; }
+    .step:first-child::after { display: none; }
+    .step-num { width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 900; position: relative; z-index: 1; background: var(--card2); color: var(--muted); border: 2px solid var(--line); transition: all .2s ease; }
+    .step.active .step-num { background: var(--primary); color: #fff; border-color: var(--primary); box-shadow: 0 0 16px rgba(59, 130, 246, 0.3); }
+    .step.done .step-num { background: var(--primary3); color: #fff; border-color: var(--primary3); }
+    .step-label { font-size: 12px; font-weight: 700; color: var(--muted); transition: color .2s; }
+    .step.active .step-label { color: var(--text); }
+    .step.done .step-label { color: var(--primary2); }
+    @media(max-width:600px) { .step-label { display: none; } .stepper { gap: 0; justify-content: space-between; } .step { flex: none; } }
+
+    .tabs { display: flex; gap: 4px; margin-bottom: 20px; background: var(--bg2); border-radius: 12px; padding: 4px; border: 1px solid var(--line); }
+    .tab { flex: 1; text-align: center; padding: 10px 14px; border-radius: 10px; border: none; background: transparent; color: var(--muted); font-size: 13px; font-weight: 700; cursor: pointer; font-family: var(--font); transition: all .15s ease; }
+    .tab:hover { color: var(--text2); background: rgba(255,255,255,0.03); }
+    .tab.active { background: var(--primary); color: #fff; box-shadow: 0 2px 12px rgba(59, 130, 246, 0.25); }
+
+    .section-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 16px; }
+    .section-head h2 { font-size: 16px; font-weight: 900; color: var(--text); }
+    .hint { color: var(--muted); font-size: 12px; line-height: 1.7; margin-bottom: 16px; }
+    .badge { font-size: 10px; font-weight: 800; padding: 5px 10px; border-radius: 8px; background: var(--primaryDim); color: var(--primary); letter-spacing: .04em; }
+
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+    @media(max-width:640px) { .row { grid-template-columns: 1fr; } }
+    .field label { display: block; font-size: 11px; font-weight: 800; color: var(--text2); margin-bottom: 6px; letter-spacing: .02em; }
+    .input, .select, .textarea { width: 100%; padding: 11px 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg2); color: var(--text); font-size: 14px; font-family: var(--font); transition: border-color .15s,box-shadow .15s; }
+    .textarea { min-height: 80px; resize: vertical; }
+    .input:focus, .select:focus, .textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12); }
+    .field.has-error .error-msg { display: block; }
+    .field.has-error .input, .field.has-error .select { border-color: var(--danger); }
+    .error-msg { font-size: 11px; color: var(--danger); margin-top: 4px; display: none; }
+    select option { background: var(--card); color: var(--text); }
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+
+    .skills-panel { border: 1px solid var(--line); border-radius: 14px; padding: 16px; background: var(--bg2); margin-top: 16px; }
+    .skill-add { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+    .skill-add .input { flex: 1; min-width: 180px; }
+    .skill-add .select { width: 160px; }
+    .skill-table { width: 100%; border-collapse: collapse; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); }
+    .skill-table th, .skill-table td { padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 13px; text-align: start; }
+    .skill-table th { background: var(--card2); font-size: 11px; font-weight: 800; color: var(--text2); letter-spacing: .02em; }
+    .skill-table td { background: var(--card); }
+    .pill { display: inline-flex; align-items: center; gap: 6px; border-radius: 8px; padding: 4px 10px; background: var(--primaryDim); color: var(--primary); font-size: 12px; font-weight: 700; }
+    .x { cursor: pointer; font-weight: 900; opacity: .5; color: var(--danger); font-size: 14px; }
+    .x:hover { opacity: 1; }
+    input[type=range] { -webkit-appearance: none; appearance: none; height: 6px; background: var(--line); border-radius: 99px; outline: none; width: 120px; }
+    input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--primary); cursor: pointer; box-shadow: 0 0 8px rgba(59, 130, 246, 0.3); }
+
+    .roles-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    @media(max-width:720px) { .roles-grid { grid-template-columns: 1fr; } }
+    .role-card { border: 1px solid var(--line); border-radius: 14px; background: var(--card); padding: 14px; cursor: pointer; transition: all .15s ease; position: relative; overflow: hidden; }
+    .role-card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(59, 130, 246, 0.04), transparent); opacity: 0; transition: opacity .2s; }
+    .role-card:hover { border-color: var(--line2); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+    .role-card:hover::before { opacity: 1; }
+    .role-card.active { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15), 0 8px 24px rgba(0,0,0,0.3); }
+    .role-card.active::before { opacity: 1; }
+    .role-card h3 { font-size: 14px; font-weight: 800; margin-bottom: 4px; position: relative; }
+    .role-card .desc { font-size: 12px; color: var(--muted); line-height: 1.5; position: relative; }
+    .role-meta { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; position: relative; }
+    .tag { font-size: 10px; padding: 3px 8px; border-radius: 6px; background: var(--card2); color: var(--text2); border: 1px solid var(--line); }
+
+    .kpi { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+    @media(max-width:560px) { .kpi { grid-template-columns: 1fr; } }
+    .kpi-box { border: 1px solid var(--line); border-radius: 14px; padding: 16px; background: var(--bg2); position: relative; overflow: hidden; }
+    .kpi-title { font-size: 11px; font-weight: 800; color: var(--text2); margin-bottom: 8px; letter-spacing: .04em; text-transform: uppercase; }
+    .score { font-size: 42px; font-weight: 900; color: var(--primary); letter-spacing: -.02em; }
+    .score-bar { height: 6px; border-radius: 99px; background: var(--line); margin-top: 8px; overflow: hidden; }
+    .score-bar-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--primary3), var(--primary)); transition: width .6s ease; }
+    .small { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+    .panel { border: 1px solid var(--line); border-radius: 14px; padding: 16px; background: var(--card); margin-bottom: 12px; }
+    .panel h4 { font-size: 14px; font-weight: 800; margin-bottom: 10px; color: var(--text); }
+    .list { margin: 0; padding-inline-start: 18px; color: var(--text2); font-size: 13px; line-height: 1.8; }
+    .list li::marker { color: var(--primary3); }
+    .warn { color: var(--warn); font-weight: 700; }
+
+    .chart-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+    @media(max-width:720px) { .chart-wrap { grid-template-columns: 1fr; } }
+    .chart-container { border: 1px solid var(--line); border-radius: 14px; background: var(--card); padding: 12px; overflow: hidden; min-height: 280px; }
+    canvas { width: 100%; height: 280px; display: block; }
+
+    .week { border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-bottom: 8px; background: var(--bg2); }
+    .week-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+    .week-head .w { font-weight: 900; color: var(--text); font-size: 14px; }
+    .week-head .focus { font-size: 11px; color: var(--primary); font-weight: 800; background: var(--primaryDim); padding: 3px 8px; border-radius: 6px; }
+    .week ul { margin: 6px 0 0; padding-inline-start: 18px; font-size: 13px; color: var(--text2); line-height: 1.8; }
+    .week .phase-tag { font-size: 10px; font-weight: 800; color: var(--warn); background: rgba(245,158,11,0.1); padding: 2px 8px; border-radius: 6px; margin-inline-start: 8px; }
+    .project { border: 1px solid var(--line); border-radius: 14px; padding: 16px; background: var(--card); margin-bottom: 12px; }
+    .project h5 { font-size: 14px; font-weight: 800; margin-bottom: 6px; }
+
+    .mono { font-family: var(--mono); font-size: 12px; background: var(--bg2); border: 1px solid var(--line); border-radius: 10px; padding: 12px; overflow: auto; white-space: pre-wrap; color: var(--text2); line-height: 1.6; max-height: 300px; direction: ltr !important; text-align: left !important; unicode-bidi: plaintext; }
+
+    .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+    @media(max-width:640px) { .compare-grid { grid-template-columns: 1fr; } }
+    .compare-col { border: 1px solid var(--line); border-radius: 12px; padding: 14px; background: var(--bg2); }
+    .compare-col h5 { font-size: 13px; font-weight: 800; margin-bottom: 8px; color: var(--primary); }
+    .compare-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; font-size: 12px; border-bottom: 1px solid var(--line); }
+    .compare-row:last-child { border: none; }
+
+    .assistant { border-radius: var(--radius); background: var(--bg2); border: 1px solid var(--line); padding: 16px; display: flex; flex-direction: column; height: fit-content; position: sticky; top: 80px; }
+    .dialog-title { font-size: 14px; font-weight: 900; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; color: var(--text); }
+    .dialog { border-radius: 14px; background: var(--card); border: 1px solid var(--line); padding: 12px; min-height: 200px; max-height: 360px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+    .msg { display: flex; }
+    .msg-siraj { justify-content: flex-start; }
+    .msg-user { justify-content: flex-end; }
+    .bubble { max-width: 88%; padding: 10px 14px; border-radius: 14px; font-size: 13px; line-height: 1.6; }
+    .msg-siraj .bubble { background: var(--card2); color: var(--text2); border-bottom-right-radius: 4px; }
+    .msg-user .bubble { background: var(--primary); color: #fff; font-weight: 600; border-bottom-left-radius: 4px; }
+    .chat-input-row { display: flex; gap: 8px; margin-top: 12px; }
+    .chat-input-row .input { flex: 1; }
+    .footnote { margin-top: 12px; font-size: 11px; color: var(--muted); line-height: 1.6; padding-top: 12px; border-top: 1px solid var(--line); }
+    .quick-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+    .quick-btn { font-size: 11px; padding: 6px 10px; border-radius: 8px; background: var(--card2); color: var(--text2); border: 1px solid var(--line); cursor: pointer; font-family: var(--font); transition: all .15s; }
+    .quick-btn:hover { background: var(--primaryDim); color: var(--primary); border-color: rgba(59, 130, 246, 0.2); }
+
+    .report-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+    @media(max-width:640px) { .report-summary { grid-template-columns: 1fr 1fr; } }
+    .report-stat { background: var(--bg2); border: 1px solid var(--line); border-radius: 12px; padding: 12px; text-align: center; }
+    .report-stat .val { font-size: 22px; font-weight: 900; color: var(--primary); }
+    .report-stat .lbl { font-size: 10px; color: var(--muted); font-weight: 700; margin-top: 4px; }
+
+    .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; pointer-events: none; }
+    .toast > div { pointer-events: auto; background: var(--primary); color: #fff; padding: 10px 20px; border-radius: 12px; font-size: 13px; font-weight: 700; box-shadow: 0 8px 30px rgba(59, 130, 246, 0.3); opacity: 0; transform: translateY(10px); transition: all .25s ease; }
+    .toast.show > div { opacity: 1; transform: translateY(0); }
+
+    .estimate-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 10px; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.2); color: var(--warn); font-size: 12px; font-weight: 700; margin-top: 8px; }
+
+    .miss-row { display: flex; gap: 10px; align-items: flex-start; justify-content: space-between; }
+    .miss-text { flex: 1; min-width: 0; }
+    .miss-actions { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+    .miss-ev { margin-top: 4px; font-size: 12px; color: var(--muted); }
+    .evlink { color: var(--primary); text-decoration: none; font-weight: 800; }
+    .evlink:hover { text-decoration: underline; }
+    .evnote { color: var(--text2); }
+    .evnone { opacity: .7; }
+
+    [dir=ltr] .brand-title { font-family: 'Space Grotesk', var(--font); }
+
+    /* ─── LANDING PAGE (صفحة الترحيب) ─── */
+    .landing-container {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      min-height: 75vh; text-align: center; position: relative; z-index: 10;
+      animation: fadeUp 0.8s ease forwards;
+    }
+    .glow-orb {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 450px; height: 450px; 
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+      filter: blur(40px); z-index: -1; animation: pulseOrb 4s infinite alternate;
+    }
+    @keyframes pulseOrb { 
+      0% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); } 
+      100% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); } 
+    }
+    .landing-badge {
+      display: inline-block; padding: 8px 16px; background: rgba(59, 130, 246, 0.1);
+      color: var(--primary); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 99px;
+      font-size: 13px; font-weight: 800; margin-bottom: 24px; letter-spacing: 0.5px;
+    }
+    .landing-title { 
+      font-size: 46px; font-weight: 900; line-height: 1.4; color: var(--text); 
+      margin-bottom: 20px; letter-spacing: -1px; 
+    }
+    .landing-title .highlight { 
+      background: linear-gradient(90deg, var(--primary), #8B5CF6); 
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; 
+    }
+    .landing-desc { 
+      font-size: 17px; color: var(--text2); max-width: 650px; line-height: 1.8; margin-bottom: 36px; 
+    }
+    .landing-features { display: flex; gap: 16px; justify-content: center; margin-bottom: 40px; flex-wrap: wrap; }
+    .landing-features span { 
+      background: var(--card); padding: 10px 18px; border-radius: 12px; 
+      font-size: 14px; font-weight: 700; color: var(--text); border: 1px solid var(--line); 
+    }
+    .landing-btn { 
+      font-size: 18px; padding: 16px 36px; border-radius: 14px; 
+      box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3); transition: all 0.3s ease; 
+    }
+    .landing-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(59, 130, 246, 0.5); }
+    @media (max-width: 600px) { .landing-title { font-size: 32px; } .glow-orb { width: 300px; height: 300px; } }
+
+    /* 🌟 تأثير المنارة التقنية 🌟 */
+    @keyframes pulseNode {
+      0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5); }
+      70% { box-shadow: 0 0 0 12px rgba(59, 130, 246, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+    }
+    .tech-bulb-loading {
+      position: relative; overflow: hidden;
+      background: linear-gradient(135deg, var(--primary3), var(--primary)) !important;
+      color: white !important; border: none !important;
+      animation: pulseNode 1.5s infinite; transition: all 0.3s ease;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-left">
+      <div class="logo" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 12 3a4.65 4.65 0 0 0-4.5 8.5c.76.76 1.23 1.52 1.41 2.5"></path>
+          <circle cx="12" cy="9" r="1.5"></circle><path d="M12 10.5v3.5"></path><circle cx="9.5" cy="14" r="1"></circle><circle cx="14.5" cy="14" r="1"></circle>
+          <path d="M12 10.5l-2.5 2.5"></path><path d="M12 10.5l2.5 2.5"></path>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-title">سِراج — بوصلتك الذكية لسوق العمل</div>
+        <div class="brand-sub">تحليل فجوة المهارات · خارطة طريق · مشاريع بورتفوليو — السوق السعودي</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="chip" id="mockChip">MVP</span>
+      <button class="btn btn-ghost" id="langBtn">EN</button>
+      <button class="btn btn-primary" id="shareBtn">🔗 مشاركة</button>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="wrap">
+
+      <div id="landingPage" class="landing-container">
+        <div class="glow-orb"></div>
+        <div class="landing-badge">🚀 أهلاً بك في سِراج — منتج هاكاثون طويق</div>
+        <h1 class="landing-title">لنبني معاً مستقبلك المهني <br><span class="highlight">لتحقيق رؤية 2030</span></h1>
+        <p class="landing-desc">
+          أول مستشار مهني سعودي مدعوم بالذكاء الاصطناعي. يقيس جاهزيتك، يحلل فجوة مهارات بدقة، ويبني لك خارطة طريق مخصصة لدخول سوق العمل بثقة وفعالية.
+        </p>
+        <div class="landing-features">
+          <span>✨ تحليل ذكي بالـ AI</span>
+          <span>🗺️ خارطة طريق مخصصة</span>
+          <span>💼 مشاريع بورتفوليو</span>
+        </div>
+        <button class="btn btn-primary landing-btn" id="startAppBtn">ابدأ رحلتك الآن ➔</button>
+      </div>
+
+      <div id="appContent" style="display: none;">
+
+        <div class="stepper" id="stepper">
+          <div class="step active" data-step="profile" id="step1">
+            <div class="step-num">١</div>
+            <div class="step-label">الملف الشخصي</div>
+          </div>
+          <div class="step" data-step="roles" id="step2">
+            <div class="step-num">٢</div>
+            <div class="step-label">الوظيفة المستهدفة</div>
+          </div>
+          <div class="step" data-step="analysis" id="step3">
+            <div class="step-num">٣</div>
+            <div class="step-label">التحليل</div>
+          </div>
+          <div class="step" data-step="report" id="step4">
+            <div class="step-num">٤</div>
+            <div class="step-label">التقرير</div>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div>
+            <div class="tabs" role="tablist">
+              <button class="tab active" data-tab="profile">الملف</button>
+              <button class="tab" data-tab="roles">الوظائف</button>
+              <button class="tab" data-tab="analysis">التحليل</button>
+              <button class="tab" data-tab="report">التقرير</button>
+            </div>
+
+            <section id="viewProfile">
+              <div class="section-head"><h2>ملف الطالب</h2><span class="badge">Profile</span></div>
+              <div class="hint">عبّئ بياناتك وأضف مهاراتك. اختر “القطاع” لتفعيل Saudi Lens (توزين مختلف للمهارات).</div>
+
+              <div class="row">
+                <div class="field" id="fieldMajor">
+                  <label>التخصص *</label>
+                  <input class="input" id="major" placeholder="مثال: نظم المعلومات"/>
+                  <div class="error-msg">التخصص مطلوب (حرفين على الأقل)</div>
+                </div>
+                <div class="field">
+                  <label>المستوى التعليمي</label>
+                  <select class="select" id="eduLevel">
+                    <option value="HS">ثانوي</option>
+                    <option value="UNI" selected>جامعة</option>
+                    <option value="GRAD">خريج</option>
+                    <option value="PRO">محترف</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="field">
+                  <label>الخبرة (سنوات)</label>
+                  <input class="input" id="experienceYears" type="number" min="0" step="0.5" value="0"/>
+                </div>
+                <div class="field">
+                  <label>تفضيلات التعلم</label>
+                  <select class="select" id="prefs">
+                    <option value="balanced" selected>متوازن (12 أسبوع)</option>
+                    <option value="fast">مكثف (8 أسابيع)</option>
+                    <option value="parttime">جزئي (16 أسبوع)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="field">
+                  <label>القطاع المستهدف (Saudi Lens)</label>
+                  <select class="select" id="sector">
+                    <option value="gov">حكومي</option>
+                    <option value="quasi" selected>شبه حكومي</option>
+                    <option value="private">خاص</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>الشهادات (افصل بفاصلة)</label>
+                  <input class="input" id="certs" placeholder="مثال: Google Data Analytics, AWS CCP"/>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="field">
+                  <label>أدوات تعرفها (اختياري)</label>
+                  <input class="input" id="tools" placeholder="مثال: Power BI, Excel, Git"/>
+                </div>
+                <div class="field">
+                  <label>ملاحظة</label>
+                  <input class="input" disabled value="إثبات المهارات يظهر بعد التحليل داخل قائمة الفجوات"/>
+                </div>
+              </div>
+
+              <div class="skills-panel">
+                <div class="section-head" style="margin-bottom:10px">
+                  <h2>مهاراتك (مستوى 1–5)</h2>
+                  <span class="small">أضف مهارة ثم حدّد المستوى</span>
+                </div>
+
+                <div class="skill-add">
+                  <input class="input" id="skillName" placeholder="مثال: SQL, Python, تحليل المتطلبات"/>
+                  <select class="select" id="skillLevel">
+                    <option value="1">1 مبتدئ</option>
+                    <option value="2">2</option>
+                    <option value="3" selected>3 متوسط</option>
+                    <option value="4">4 متقدم</option>
+                    <option value="5">5 خبير</option>
+                  </select>
+                  <button class="btn btn-primary" id="addSkillBtn">+ إضافة</button>
+                  <button class="btn btn-primary" style="background:var(--warn);color:#000" id="loadSampleBtn">🚀 عرض ديمو مباشر (لجنة التحكيم)</button>
+                </div>
+
+                <div id="skillsEmpty" class="hint" style="text-align:center;padding:20px 0">
+                  لم تُضف مهارات بعد. أضف مهارة واحدة على الأقل للمتابعة.
+                </div>
+
+                <table class="skill-table" style="display:none" id="skillTable">
+                  <thead><tr><th>المهارة</th><th>التطبيع</th><th>المستوى</th><th></th></tr></thead>
+                  <tbody id="skillsBody"></tbody>
+                </table>
+
+                <div class="actions">
+                  <button class="btn btn-primary" id="saveProfileBtn">💾 حفظ الملف</button>
+                  <button class="btn btn-soft" id="resetProfileBtn">🧹 تصفير</button>
+                </div>
+              </div>
+            </section>
+
+            <section id="viewRoles" style="display:none">
+              <div class="section-head"><h2>اختر الوظيفة المستهدفة</h2><span class="badge">Roles</span></div>
+              <div class="hint">اختر الوظيفة. النسبة المعروضة تقدير سريع (مع Cache للأداء).</div>
+
+              <div class="roles-grid" id="rolesGrid"></div>
+
+              <div class="actions">
+                <button class="btn btn-primary" id="analyzeBtn">🧠 حلّل الجاهزية</button>
+                <button class="btn btn-soft" id="autoPickBtn">🎯 اختر لي الأنسب</button>
+                <button class="btn btn-ghost" id="compareBtn">⚖️ قارن وظيفتين</button>
+              </div>
+
+              <div id="comparePanel" class="panel" style="display:none;margin-top:14px">
+                <h4>مقارنة بين وظيفتين</h4>
+                <div class="row">
+                  <div class="field">
+                    <label>الوظيفة الأولى</label>
+                    <select class="select" id="compare1"></select>
+                  </div>
+                  <div class="field">
+                    <label>الوظيفة الثانية</label>
+                    <select class="select" id="compare2"></select>
+                  </div>
+                </div>
+                <button class="btn btn-primary" id="runCompareBtn" style="margin-top:8px">قارن الآن</button>
+                <div class="compare-grid" id="compareResult"></div>
+              </div>
+            </section>
+
+            <section id="viewAnalysis" style="display:none">
+              <div class="section-head"><h2>نتيجة التحليل</h2><span class="badge">Analysis</span></div>
+
+              <div class="kpi">
+                <div class="kpi-box">
+                  <div class="kpi-title">READINESS SCORE</div>
+                  <div class="score" id="scoreValue">—</div>
+                  <div class="score-bar"><div class="score-bar-fill" id="scoreBar" style="width:0%"></div></div>
+                  <div class="small" style="margin-top:6px">0–100 بناءً على مطابقة المهارات المطلوبة + Saudi Lens</div>
+                  <div class="estimate-badge" id="estimateBadge" style="display:none">
+                    ⏱️ <span id="estimateText"></span>
+                  </div>
+                </div>
+
+                <div class="kpi-box">
+                  <div class="kpi-title">CONFIDENCE</div>
+                  <div class="score" style="font-size:34px" id="confidenceValue">—</div>
+                  <div class="score-bar"><div class="score-bar-fill" id="confidenceBar" style="width:0%"></div></div>
+                  <div class="small" style="margin-top:6px" id="confidenceNote">—</div>
+                </div>
+              </div>
+
+              <div class="kpi" style="margin-top:0">
+                <div class="kpi-box">
+                  <div class="kpi-title">ROLE</div>
+                  <div style="font-weight:900;font-size:18px;margin-bottom:6px" id="roleValue">—</div>
+                  <div class="small" id="roleNote"></div>
+                </div>
+                <div class="kpi-box">
+                  <div class="kpi-title">TIP</div>
+                  <div class="small">أضف “إثبات” لكل فجوة (رابط GitHub/شهادة) لرفع قوة ملفك أمام لجنة التحكيم.</div>
+                </div>
+              </div>
+
+              <div class="chart-wrap">
+                <div class="chart-container"><canvas id="barChart"></canvas></div>
+                <div class="chart-container"><canvas id="radarChart"></canvas></div>
+              </div>
+
+              <div class="panel">
+                <h4>المهارات الناقصة/الضعيفة (مرتبة بالأثر) + إثباتات</h4>
+                <ol class="list" id="missingList"></ol>
+              </div>
+              <div class="panel"><h4>خارطة طريق</h4><div id="roadmap"></div></div>
+              <div class="panel"><h4>مشاريع بورتفوليو مقترحة</h4><div id="projects"></div></div>
+
+              <div class="actions">
+                <button class="btn btn-primary" id="saveReportBtn">📌 حفظ التقرير والمشاركة</button>
+              </div>
+            </section>
+
+            <section id="viewReport" style="display:none">
+              <div class="section-head"><h2>التقرير</h2><span class="badge">Report</span></div>
+              <div class="hint">يمكن مشاركة التقرير عبر رابط أو تصديره PDF/JSON. الرابط يعمل على أي جهاز.</div>
+
+              <div class="report-summary" id="reportSummary"></div>
+              <div class="panel"><h4>البيانات (JSON)</h4><div class="mono" id="reportJson"></div></div>
+
+              <div class="actions">
+                <button class="btn btn-primary" id="downloadPdfBtn">⬇️ تصدير PDF تنفيذي</button>
+                <button class="btn btn-ghost" id="downloadJsonBtn">⬇️ JSON</button>
+                <button class="btn btn-soft" id="loadFromLinkBtn">🔎 تحميل من الرابط</button>
+              </div>
+            </section>
+          </div>
+
+          <aside class="assistant">
+            <div class="dialog-title">سِراج (مستشارك المهني)</div>
+            <div class="dialog" id="dialog"></div>
+
+            <div class="quick-actions" id="quickActions">
+              <button class="quick-btn" data-q="وش أفضل وظيفة لي؟">أفضل وظيفة لي</button>
+              <button class="quick-btn" data-q="وش ناقصني؟">وش ناقصني؟</button>
+              <button class="quick-btn" data-q="أبي أصير Data Analyst">Data Analyst</button>
+              <button class="quick-btn" data-q="كم أسبوع أحتاج؟">كم أسبوع؟</button>
+            </div>
+
+            <div class="chat-input-row">
+              <input class="input" id="chatInput" placeholder="اكتب سؤالك…"/>
+              <button class="btn btn-primary" id="chatSendBtn">إرسال</button>
+            </div>
+
+            <div class="footnote">MVP+ — Smart Share + Saudi Lens + Evidence + Confidence.</div>
+          </aside>
+        </div>
+
+      </div> </div>
+  </main>
+
+  <div class="toast" id="toast"><div id="toastText">تم</div></div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      // ══════════════════════════════════════════════════════════════
+      // CONFIG & API 
+      // ══════════════════════════════════════════════════════════════
+      // 🔴 رابط Make.com: إذا شحنت الرصيد حطه هنا، وإذا تركت الخانة فاضية بيشتغل المحرك المحلي للهاكاثون كـ MVP.
+      const AI_WEBHOOK_URL = "https://hook.eu1.make.com/YOUR_WEBHOOK_HERE"; 
+
+      const MAX_SKILL_LEVEL = 5;
+      const MIN_SKILL_LEVEL = 1;
+      const CUSTOM_SKILL_PREFIX = "custom:";
+      const STORAGE_KEY_PROFILE = "siraj_profile_v3";
+      const STORAGE_KEY_REPORTS = "siraj_reports_v3";
+
+      // ═══════════════════════════════════
+      // UTILITIES
+      // ═══════════════════════════════════
+      const $ = (id) => document.getElementById(id);
+      const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+      const round = (n) => Math.round(n);
+      const nowISO = () => new Date().toISOString();
+      const uid = () => "r_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
+      const escHtml = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+
+      const store = {
+        get(k, fb) { try { const v = localStorage.getItem(k); return v !== null ? JSON.parse(v) : fb; } catch { return fb; } },
+        set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+      };
+
+      // ═══════════════════════════════════
+      // i18n
+      // ═══════════════════════════════════
+      const STRINGS = {
+        ar: { shareCopied: "تم النسخ", fillFirst: "يرجى إكمال التخصص والمهارات أولاً", pickRole: "اختر الوظيفة أولاً", autoPicked: "تم التحديد آلياً", profileSaved: "تم الحفظ", profileReset: "تم التصفير", slowDown: "الرجاء الانتظار", analysisError: "استخدمنا المحرك المحلي لعدم توفر إنترنت", pdfDone: "تم التحميل", evidence: "إثبات", evidenceSaved: "تم حفظ الإثبات بنجاح" },
+        en: { shareCopied: "Copied", fillFirst: "Fill profile first", pickRole: "Pick role first", autoPicked: "Auto-picked", profileSaved: "Saved", profileReset: "Reset", slowDown: "Wait", analysisError: "Used Local Engine", pdfDone: "Downloaded", evidence: "Evidence", evidenceSaved: "Evidence saved" },
+      };
+      const i18n = { lang: "ar", t(k) { return (STRINGS[this.lang] || STRINGS.ar)[k] || k; } };
+
+      // ═══════════════════════════════════
+      // SKILLS & ROLES
+      // ═══════════════════════════════════
+      const SKILLS = {
+        sql: { ar: "SQL", en: "SQL" }, excel: { ar: "Excel", en: "Excel" }, powerbi: { ar: "Power BI", en: "Power BI" }, python: { ar: "Python", en: "Python" },
+        statistics: { ar: "الإحصاء", en: "Statistics" }, ml: { ar: "تعلم الآلة", en: "Machine Learning" }, data_viz: { ar: "تصوير البيانات", en: "Data Visualization" }, 
+        data_modeling: { ar: "نمذجة البيانات", en: "Data Modeling" }, etl: { ar: "ETL", en: "ETL" }, cloud: { ar: "الحوسبة السحابية", en: "Cloud" },
+        aws: { ar: "AWS", en: "AWS" }, azure: { ar: "Azure", en: "Azure" }, gcp: { ar: "GCP", en: "GCP" }, cybersecurity: { ar: "الأمن السيبراني", en: "Cybersecurity" },
+        networking: { ar: "الشبكات", en: "Networking" }, linux: { ar: "Linux", en: "Linux" }, devops: { ar: "DevOps", en: "DevOps" }, git: { ar: "Git", en: "Git" },
+        api: { ar: "واجهات API", en: "APIs" }, requirements: { ar: "تحليل المتطلبات", en: "Requirements" }, process: { ar: "تحسين العمليات", en: "Process Improvement" }, 
+        stakeholder: { ar: "إدارة أصحاب المصلحة", en: "Stakeholder Mgmt" }, communication: { ar: "التواصل", en: "Communication" }, presentation: { ar: "العرض والتقديم", en: "Presentation" },
+        product: { ar: "إدارة المنتج", en: "Product Management" }, ux: { ar: "تجربة المستخدم UX", en: "UX" }, erp: { ar: "ERP", en: "ERP" }, sap: { ar: "SAP", en: "SAP" },
+        agile: { ar: "Agile/Scrum", en: "Agile/Scrum" }, testing: { ar: "اختبار البرمجيات", en: "Testing" }, coding: { ar: "البرمجة", en: "Programming" },
+      };
+
+      const ROLES = [
+        { id: "data_analyst", ar: "محلل بيانات", en: "Data Analyst", descAr: "تحليل البيانات وبناء لوحات وقراءات تنفيذية.", tools: ["sql", "excel", "powerbi"], required: [{ skill: "sql", level: 4, weight: 10 }, { skill: "excel", level: 4, weight: 7 }, { skill: "powerbi", level: 4, weight: 9 }, { skill: "statistics", level: 3, weight: 6 }, { skill: "data_viz", level: 4, weight: 6 }, { skill: "communication", level: 3, weight: 5 }, { skill: "presentation", level: 3, weight: 4 }], optional: [{ skill: "python", level: 2, weight: 3 }, { skill: "data_modeling", level: 2, weight: 3 }] },
+        { id: "data_scientist", ar: "عالم بيانات", en: "Data Scientist", descAr: "نمذجة تنبؤية وتحليلات متقدمة.", tools: ["python", "sql", "git"], required: [{ skill: "python", level: 4, weight: 10 }, { skill: "statistics", level: 4, weight: 9 }, { skill: "ml", level: 4, weight: 10 }, { skill: "sql", level: 3, weight: 6 }, { skill: "etl", level: 3, weight: 6 }, { skill: "git", level: 3, weight: 4 }, { skill: "communication", level: 3, weight: 5 }], optional: [{ skill: "cloud", level: 2, weight: 4 }, { skill: "api", level: 2, weight: 3 }] },
+        { id: "business_analyst", ar: "محلل أعمال", en: "Business Analyst", descAr: "تحليل متطلبات وربط التقنية بالعمل.", tools: ["excel", "agile"], required: [{ skill: "requirements", level: 4, weight: 10 }, { skill: "process", level: 4, weight: 8 }, { skill: "stakeholder", level: 4, weight: 8 }, { skill: "communication", level: 4, weight: 8 }, { skill: "presentation", level: 3, weight: 5 }, { skill: "agile", level: 3, weight: 5 }, { skill: "excel", level: 3, weight: 4 }], optional: [{ skill: "sql", level: 2, weight: 3 }] },
+        { id: "cyber_analyst", ar: "محلل أمن سيبراني", en: "Cyber Analyst", descAr: "مراقبة التهديدات، SOC، وتحليل الحوادث.", tools: ["linux", "networking"], required: [{ skill: "cybersecurity", level: 4, weight: 10 }, { skill: "networking", level: 4, weight: 8 }, { skill: "linux", level: 3, weight: 6 }, { skill: "communication", level: 3, weight: 5 }, { skill: "process", level: 3, weight: 4 }], optional: [{ skill: "cloud", level: 2, weight: 4 }] },
+        { id: "software_engineer", ar: "مهندس برمجيات", en: "Software Engineer", descAr: "تطوير منتجات برمجية، هندسة، اختبار.", tools: ["git", "api", "testing"], required: [{ skill: "coding", level: 4, weight: 10 }, { skill: "git", level: 3, weight: 6 }, { skill: "api", level: 3, weight: 6 }, { skill: "testing", level: 3, weight: 6 }, { skill: "communication", level: 3, weight: 4 }], optional: [{ skill: "cloud", level: 2, weight: 3 }] }
+      ];
+
+      function normalizeSkillName(raw) {
+        const s = String(raw || "").trim().toLowerCase().replace(/[^\p{L}\p{N}\s\/.\-+]/gu, " ").replace(/\s+/g, " ").trim();
+        if (!s) return null;
+        for (const [k, m] of Object.entries(SKILLS)) { if (s === m.ar.toLowerCase() || s === m.en.toLowerCase()) return k; }
+        return CUSTOM_SKILL_PREFIX + s.slice(0, 40);
+      }
+      function skillLabel(k) { if (k.startsWith(CUSTOM_SKILL_PREFIX)) return k.replace(CUSTOM_SKILL_PREFIX, ""); const m = SKILLS[k]; return m ? (i18n.lang === "ar" ? m.ar : m.en) : k; }
+
+      const state = {
+        tab: "profile", selectedRoleId: null, completedSteps: new Set(),
+        profile: { major: "", eduLevel: "UNI", experienceYears: 0, prefs: "balanced", sector: "quasi", certs: [], tools: [], skills: [], evidence: {} },
+        analysis: null, reportId: null,
+      };
+
+      const dom = {};
+      function cacheDom() {
+        dom.tabs = document.querySelectorAll(".tab"); dom.steps = document.querySelectorAll(".step");
+        dom.views = { profile: $("viewProfile"), roles: $("viewRoles"), analysis: $("viewAnalysis"), report: $("viewReport") };
+        dom.major = $("major"); dom.eduLevel = $("eduLevel"); dom.experienceYears = $("experienceYears"); dom.prefs = $("prefs"); dom.sector = $("sector"); dom.certs = $("certs"); dom.tools = $("tools");
+        dom.skillName = $("skillName"); dom.skillLevel = $("skillLevel"); dom.skillsBody = $("skillsBody"); dom.skillTable = $("skillTable"); dom.skillsEmpty = $("skillsEmpty");
+        dom.rolesGrid = $("rolesGrid"); dom.scoreValue = $("scoreValue"); dom.scoreBar = $("scoreBar"); dom.roleValue = $("roleValue"); dom.roleNote = $("roleNote");
+        dom.confidenceValue = $("confidenceValue"); dom.confidenceBar = $("confidenceBar"); dom.confidenceNote = $("confidenceNote");
+        dom.missingList = $("missingList"); dom.roadmap = $("roadmap"); dom.projects = $("projects"); dom.barChart = $("barChart"); dom.radarChart = $("radarChart");
+        dom.dialog = $("dialog"); dom.chatInput = $("chatInput"); dom.toast = $("toast"); dom.toastText = $("toastText");
+        dom.estimateBadge = $("estimateBadge"); dom.estimateText = $("estimateText"); dom.compare1 = $("compare1"); dom.compare2 = $("compare2");
+      }
+
+      let toastTimer;
+      function toast(t) { dom.toastText.textContent = t; dom.toast.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => dom.toast.classList.remove("show"), 1800); }
+
+      function setTab(tab) {
+        state.tab = tab;
+        dom.tabs.forEach((t) => { const isActive = t.dataset.tab === tab; t.classList.toggle("active", isActive); });
+        Object.entries(dom.views).forEach(([k, el]) => { el.style.display = k === tab ? "block" : "none"; });
+        const order = ["profile", "roles", "analysis", "report"]; const idx = order.indexOf(tab);
+        dom.steps.forEach((s, i) => { s.classList.toggle("active", i === idx); s.classList.toggle("done", state.completedSteps.has(order[i]) && i !== idx); });
+        if (tab === "analysis" && state.analysis) {
+          requestAnimationFrame(() => { setTimeout(() => { drawBarChart(dom.barChart, state.analysis.res.charts); drawRadarChart(dom.radarChart, state.analysis.res.charts); }, 80); });
+        }
+      }
+
+      function profileFromInputs() {
+        state.profile.major = dom.major.value.trim(); state.profile.eduLevel = dom.eduLevel.value; state.profile.experienceYears = clamp(Number(dom.experienceYears.value || 0), 0, 50);
+        state.profile.prefs = dom.prefs.value; state.profile.sector = dom.sector.value || "quasi";
+        state.profile.certs = dom.certs.value.split(",").map((s) => s.trim()).filter(Boolean); state.profile.tools = dom.tools.value.split(",").map((s) => s.trim()).filter(Boolean);
+      }
+      function loadProfileToInputs() {
+        dom.major.value = state.profile.major || ""; dom.eduLevel.value = state.profile.eduLevel || "UNI"; dom.experienceYears.value = String(state.profile.experienceYears || 0);
+        dom.prefs.value = state.profile.prefs || "balanced"; dom.sector.value = state.profile.sector || "quasi";
+        dom.certs.value = (state.profile.certs || []).join(", "); dom.tools.value = (state.profile.tools || []).join(", ");
+      }
+      function validateProfile() {
+        profileFromInputs(); let valid = true; const mf = $("fieldMajor");
+        if (state.profile.major.length < 2) { mf.classList.add("has-error"); valid = false; } else { mf.classList.remove("has-error"); }
+        if ((state.profile.skills || []).length === 0) valid = false; return valid;
+      }
+      function saveProfile() { profileFromInputs(); store.set(STORAGE_KEY_PROFILE, state.profile); state.completedSteps.add("profile"); toast(i18n.t("profileSaved")); }
+      function loadProfile() { const p = store.get(STORAGE_KEY_PROFILE, null); if (p) state.profile = { ...state.profile, ...p, evidence: p.evidence || {} }; loadProfileToInputs(); renderSkillsTable(); }
+      function resetProfile() { state.profile = { major: "", eduLevel: "UNI", experienceYears: 0, prefs: "balanced", sector: "quasi", certs: [], tools: [], skills: [], evidence: {} }; loadProfileToInputs(); renderSkillsTable(); store.set(STORAGE_KEY_PROFILE, state.profile); toast(i18n.t("profileReset")); }
+
+      function addSkill(raw, level) {
+        const key = normalizeSkillName(raw);
+        if (!key || String(raw || "").trim().length < 2) { toast("اسم المهارة غير صالح"); return; }
+        const lvl = clamp(Number(level || 3), MIN_SKILL_LEVEL, MAX_SKILL_LEVEL);
+        const idx = state.profile.skills.findIndex((s) => s.key === key);
+        if (idx >= 0) { state.profile.skills[idx].level = Math.max(state.profile.skills[idx].level, lvl); state.profile.skills[idx].raw = raw; } else { state.profile.skills.push({ raw: raw.trim(), key, level: lvl }); }
+        renderSkillsTable(); store.set(STORAGE_KEY_PROFILE, state.profile);
+      }
+      function removeSkill(key) { state.profile.skills = state.profile.skills.filter((s) => s.key !== key); if (state.profile.evidence?.[key]) delete state.profile.evidence[key]; renderSkillsTable(); store.set(STORAGE_KEY_PROFILE, state.profile); }
+      function setSkillLevel(key, level) { const s = state.profile.skills.find((x) => x.key === key); if (s) s.level = clamp(Number(level), MIN_SKILL_LEVEL, MAX_SKILL_LEVEL); renderSkillsTable(); store.set(STORAGE_KEY_PROFILE, state.profile); }
+
+      function renderSkillsTable() {
+        const tb = dom.skillsBody; tb.innerHTML = "";
+        const sk = [...(state.profile.skills || [])].sort((a, b) => skillLabel(a.key).localeCompare(skillLabel(b.key)));
+        dom.skillTable.style.display = sk.length ? "table" : "none"; dom.skillsEmpty.style.display = sk.length ? "none" : "block";
+        for (const s of sk) {
+          const tr = document.createElement("tr");
+          const tdName = document.createElement("td"); const pill = document.createElement("span"); pill.className = "pill"; pill.textContent = s.raw || skillLabel(s.key); tdName.appendChild(pill);
+          const tdNorm = document.createElement("td"); tdNorm.style.cssText = "color:var(--muted);font-size:12px"; tdNorm.textContent = s.key.startsWith(CUSTOM_SKILL_PREFIX) ? "—" : skillLabel(s.key);
+          const tdLevel = document.createElement("td"); const rangeInput = document.createElement("input"); rangeInput.type = "range"; rangeInput.min = String(MIN_SKILL_LEVEL); rangeInput.max = String(MAX_SKILL_LEVEL); rangeInput.value = String(s.level); rangeInput.addEventListener("input", () => setSkillLevel(s.key, rangeInput.value)); const levelSpan = document.createElement("span"); levelSpan.style.cssText = "font-weight:800;margin-inline-start:8px"; levelSpan.textContent = String(s.level); rangeInput.addEventListener("input", () => { levelSpan.textContent = rangeInput.value; }); tdLevel.appendChild(rangeInput); tdLevel.appendChild(levelSpan);
+          const tdRemove = document.createElement("td"); const removeBtn = document.createElement("span"); removeBtn.className = "x"; removeBtn.textContent = "✕"; removeBtn.addEventListener("click", () => removeSkill(s.key)); tdRemove.appendChild(removeBtn);
+          tr.append(tdName, tdNorm, tdLevel, tdRemove); tb.appendChild(tr);
+        }
+      }
+
+      function renderRoles() {
+        dom.rolesGrid.innerHTML = "";
+        for (const r of ROLES) {
+          const div = document.createElement("div");
+          div.className = "role-card" + (state.selectedRoleId === r.id ? " active" : "");
+          div.innerHTML = `<h3>${escHtml(i18n.lang === "ar" ? r.ar : r.en)}</h3><div class="desc">${escHtml(i18n.lang === "ar" ? r.descAr : r.descEn)}</div><div class="role-meta">${(r.tools || []).slice(0, 4).map((k) => `<span class="tag">${escHtml(skillLabel(k))}</span>`).join("")}</div>`;
+          div.addEventListener("click", () => { state.selectedRoleId = r.id; renderRoles(); saySiraj("siraj", i18n.lang === "ar" ? `اخترت: ${r.ar}. اضغط "حلّل الجاهزية".` : `Selected: ${r.en}. Click "Analyze".`); });
+          dom.rolesGrid.appendChild(div);
+        }
+        [dom.compare1, dom.compare2].forEach((sel, si) => { sel.innerHTML = ""; ROLES.forEach((r, i) => { const o = document.createElement("option"); o.value = r.id; o.textContent = i18n.lang === "ar" ? r.ar : r.en; if (si === 1 && i === 1) o.selected = true; sel.appendChild(o); }); });
+      }
+
+      function autoPickBestRole() { if (!validateProfile()) { toast(i18n.t("fillFirst")); return; } const scores = ROLES.map((r) => ({ id: r.id, score: analyzeFallback(state.profile, r).score })).sort((a, b) => b.score - a.score); state.selectedRoleId = scores[0]?.id || ROLES[0].id; renderRoles(); toast(i18n.t("autoPicked")); }
+
+      // ═══════════════════════════════════
+      // SCORING ENGINE (Fallback / Local AI)
+      // ═══════════════════════════════════
+      function sectorWeightMult(sector, roleId, skillKey) {
+        let m = 1;
+        if (sector === "gov" && ["requirements", "process", "stakeholder", "communication"].includes(skillKey)) m *= 1.25;
+        if (sector === "private" && ["coding", "devops", "cloud", "api"].includes(skillKey)) m *= 1.2;
+        if (sector === "quasi" && ["communication", "stakeholder", "process"].includes(skillKey)) m *= 1.1;
+        return m;
+      }
+
+      function analyzeFallback(profile, role) {
+        const map = new Map();
+        for (const s of profile.skills || []) { const k = s.key; if (k) { map.set(k, Math.max(map.get(k) || 0, clamp(Number(s.level || 1), 1, 5))); } }
+        
+        const required = role.required || [];
+        const reqWeights = required.map((x) => (x.weight || 0) * sectorWeightMult(profile.sector || "quasi", role.id, x.skill));
+        const totalReqWeight = reqWeights.reduce((a, x) => a + x, 0) || 1;
+
+        let wSumReq = 0;
+        const perSkill = required.map((req, idx) => {
+          const uLvl = map.get(req.skill) || 0; const rLvl = clamp(req.level, 1, 5); const achieved = Math.min(1, uLvl / rLvl); const gap = Math.max(0, rLvl - uLvl); const w = reqWeights[idx] || 0; const impact = w * gap; wSumReq += w * achieved;
+          return { skill: req.skill, reqLevel: rLvl, userLevel: Math.round(uLvl * 10) / 10, weight: w, achieved, gap, impact };
+        });
+
+        const score = round(100 * Math.min(1, wSumReq / totalReqWeight));
+        const missing = perSkill.filter((x) => x.gap > 0 || x.achieved < 0.75).sort((a, b) => b.impact - a.impact).map((x) => ({ skill: x.skill, label: skillLabel(x.skill), reqLevel: x.reqLevel, userLevel: x.userLevel, impact: round(x.impact * 10) / 10, evidence: profile.evidence?.[x.skill] || null }));
+        const topReq = [...perSkill].sort((a, b) => b.weight - a.weight).slice(0, 7).map((x) => ({ key: x.skill, label: skillLabel(x.skill), req: x.reqLevel, user: Math.min(x.userLevel, 5) }));
+        
+        const roadmap = [
+          {week: 1, phase: "تأسيس", focus: [missing[0]?.label || "المهارات"], tasks: [{title: "مراجعة أساسيات", resource: "منصة سطر"}], mini: "مهمة مصغرة", quiz: "تقييم"},
+          {week: 2, phase: "تطبيق", focus: [missing[0]?.label || "المهارات"], tasks: [{title: "بناء مشروع مصغر", resource: "GitHub"}], mini: "مهمة مصغرة", quiz: "تقييم"}
+        ];
+        const projects = [{title: "تحليل بيانات القطاع الخاص", focusSkill: missing[0]?.label || "عام", objective: "تطبيق عملي سعودي", dataset: "بيانات مفتوحة", architecture: "تنظيف ثم تحليل", milestones: ["تجهيز", "تحليل"], deliverables: ["تقرير", "كود"], rubric: [{k: "الجودة", v: "0-5"}]}];
+
+        return { score, perSkill, missing, roadmap, projects, charts: topReq, estWeeks: score >= 80 ? 0 : 4, confidence: {score: 75, note: "تحليل محلي معتمد"} };
+      }
+
+      // ═══════════════════════════════════
+      // RENDER ANALYSIS
+      // ═══════════════════════════════════
+      function renderAnalysis(res, role) {
+        dom.scoreValue.textContent = String(res.score); dom.scoreBar.style.width = res.score + "%";
+        dom.roleValue.textContent = i18n.lang === "ar" ? role.ar : role.en; dom.roleNote.textContent = i18n.lang === "ar" ? role.descAr : role.descEn;
+        dom.confidenceValue.textContent = String(res.confidence?.score || 85); dom.confidenceBar.style.width = (res.confidence?.score || 85) + "%"; dom.confidenceNote.textContent = res.confidence?.note || "تحليل مبني على محرك سراج";
+        if (res.estWeeks > 0) { dom.estimateBadge.style.display = "inline-flex"; dom.estimateText.textContent = `~${res.estWeeks} أسبوع للوصول للجاهزية`; } else { dom.estimateBadge.style.display = "none"; }
+
+        // 🌟 إضافة ختم رؤية 2030 الديناميكي 🌟
+        const visionProgram = role.id === "data_analyst" || role.id === "data_scientist" ? "برنامج التحول الوطني (الرقمنة)" : role.id === "cyber_analyst" ? "الاستراتيجية الوطنية للأمن السيبراني" : "برنامج تنمية القدرات البشرية";
+        const existingBadge = dom.roleValue.parentElement.querySelector('.vision-badge');
+        if(existingBadge) existingBadge.remove();
+        const badgeContainer = document.createElement('div'); badgeContainer.className = 'vision-badge';
+        badgeContainer.innerHTML = `<div style="margin-top:8px; padding:6px 10px; background:rgba(16, 185, 129, 0.1); border:1px solid rgba(16, 185, 129, 0.3); border-radius:8px; display:inline-block;"><span style="color:#10B981; font-weight:800; font-size:11px;">🇸🇦 متوافق مع: ${visionProgram}</span></div>`;
+        dom.roleValue.parentElement.appendChild(badgeContainer);
+
+        dom.missingList.innerHTML = "";
+        if (!res.missing.length) { dom.missingList.innerHTML = `<li><span class="warn">جاهز جدًا — ركّز على مشاريع قوية!</span></li>`; } 
+        else {
+          for (const m of res.missing.slice(0, 12)) {
+            const ev = state.profile.evidence?.[m.skill];
+            dom.missingList.innerHTML += `<li style="margin-bottom:8px;"><div class="miss-row"><div class="miss-text"><b>${m.label}</b> — مطلوب ${m.reqLevel}/5, مستواك ${m.userLevel}/5 <div class="miss-ev">${ev?.url ? `<a class="evlink" href="${ev.url}" target="_blank">رابط الإثبات</a>` : `<span class="evnone">بدون إثبات</span>`}</div></div><div class="miss-actions"><button class="btn btn-ghost btn-xs" onclick="openEvidenceModal('${m.skill}')">${ev ? "تعديل إثبات" : "أضف إثبات"}</button></div></div></li>`;
+          }
+        }
+
+        dom.roadmap.innerHTML = res.roadmap.map(w => `<div class="week"><div class="week-head"><div class="w">الأسبوع ${w.week} <span class="phase-tag">${w.phase}</span></div><div class="focus">${w.focus.join(" + ")}</div></div><ul>${w.tasks.map(t => `<li>${escHtml(t.title)} <span style="color:var(--muted)">— ${escHtml(t.resource)}</span></li>`).join("")}</ul></div>`).join("");
+        dom.projects.innerHTML = res.projects.map(p => `<div class="project"><h5>${escHtml(p.title)}</h5><div class="small" style="margin-top:6px">${escHtml(p.objective)}</div></div>`).join("");
+
+        try { drawBarChart(dom.barChart, res.charts); drawRadarChart(dom.radarChart, res.charts); } catch (e) { console.error(e); }
+        state.completedSteps.add("analysis");
+      }
+
+      // ═══════════════════════════════════
+      // CHARTS (Canvas)
+      // ═══════════════════════════════════
+      function setupCanvas(canvas) { const rect = canvas.parentElement.getBoundingClientRect(); const dpr = window.devicePixelRatio || 1; const w = Math.max(280, rect.width - 24); const h = 280; canvas.width = w * dpr; canvas.height = h * dpr; canvas.style.width = w + "px"; canvas.style.height = h + "px"; const ctx = canvas.getContext("2d"); ctx.scale(dpr, dpr); return { ctx, W: w, H: h }; }
+      function roundRect(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y); ctx.quadraticCurveTo(x + w, y, x + w, y + r); ctx.lineTo(x + w, y + h - r); ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h); ctx.lineTo(x + r, y + h); ctx.quadraticCurveTo(x, y + h, x, y + h - r); ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y); ctx.closePath(); }
+      function drawBarChart(canvas, data) {
+        if (!data || !data.length) return; const { ctx, W, H } = setupCanvas(canvas); ctx.clearRect(0, 0, W, H); const pad = { t: 50, b: 60, l: 50, r: 20 }; const cW = W - pad.l - pad.r; const cH = H - pad.t - pad.b; const n = data.length; const gW = cW / n; const bW = gW * 0.28;
+        ctx.strokeStyle = "#2a3530"; ctx.lineWidth = 1; for (let i = 1; i <= MAX_SKILL_LEVEL; i++) { const y = pad.t + cH - cH * (i / MAX_SKILL_LEVEL); ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(W - pad.r, y); ctx.stroke(); ctx.fillStyle = "#6b7c73"; ctx.font = "11px system-ui"; ctx.fillText(String(i), pad.l - 20, y + 4); }
+        ctx.fillStyle = "#e8ede9"; ctx.font = "bold 14px system-ui"; ctx.fillText("مطابقة المهارات", pad.l, 30);
+        for (let i = 0; i < n; i++) { const d = data[i]; const x0 = pad.l + i * gW + gW / 2; const uH = cH * (d.user / MAX_SKILL_LEVEL); const rH = cH * (d.req / MAX_SKILL_LEVEL); ctx.fillStyle = "rgba(59, 130, 246, 0.12)"; ctx.beginPath(); roundRect(ctx, x0 - bW - 4, pad.t + cH - rH, bW, rH, 4); ctx.fill(); const grad = ctx.createLinearGradient(0, pad.t + cH - uH, 0, pad.t + cH); grad.addColorStop(0, "#3B82F6"); grad.addColorStop(1, "#1D4ED8"); ctx.fillStyle = grad; ctx.beginPath(); roundRect(ctx, x0 + 4, pad.t + cH - uH, bW, uH, 4); ctx.fill(); ctx.fillStyle = "#a3b0a8"; ctx.font = "11px system-ui"; const lbl = d.label.length > 10 ? d.label.slice(0, 10) + "…" : d.label; ctx.save(); ctx.translate(x0, H - pad.b + 16); ctx.rotate(-0.4); ctx.fillText(lbl, -20, 0); ctx.restore(); }
+        ctx.fillStyle = "#3B82F6"; roundRect(ctx, W - 160, 14, 12, 12, 3); ctx.fill(); ctx.fillStyle = "#a3b0a8"; ctx.font = "11px system-ui"; ctx.fillText("مستواك", W - 142, 24); ctx.fillStyle = "rgba(59, 130, 246, 0.15)"; roundRect(ctx, W - 90, 14, 12, 12, 3); ctx.fill(); ctx.fillStyle = "#a3b0a8"; ctx.fillText("المطلوب", W - 72, 24);
+      }
+      function drawRadarChart(canvas, data) {
+        if (!data || !data.length) return; const { ctx, W, H } = setupCanvas(canvas); ctx.clearRect(0, 0, W, H); const cx = W / 2; const cy = H / 2 + 16; const R = Math.min(W, H) * 0.32; const n = data.length;
+        for (let r = 1; r <= MAX_SKILL_LEVEL; r++) { const rr = (R * r) / MAX_SKILL_LEVEL; ctx.strokeStyle = "#2a3530"; ctx.lineWidth = 1; ctx.beginPath(); for (let i = 0; i < n; i++) { const a = (Math.PI * 2 * i) / n - Math.PI / 2; const x = cx + Math.cos(a) * rr; const y = cy + Math.sin(a) * rr; i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); } ctx.closePath(); ctx.stroke(); }
+        for (let i = 0; i < n; i++) { const a = (Math.PI * 2 * i) / n - Math.PI / 2; ctx.strokeStyle = "#2a3530"; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.cos(a) * R, cy + Math.sin(a) * R); ctx.stroke(); const lx = cx + Math.cos(a) * (R + 16); const ly = cy + Math.sin(a) * (R + 16); ctx.fillStyle = "#a3b0a8"; ctx.font = "10px system-ui"; const lbl = data[i].label.length > 10 ? data[i].label.slice(0, 10) + "…" : data[i].label; ctx.fillText(lbl, lx - 20, ly + 4); }
+        function poly(vals, fill, stroke) { ctx.beginPath(); for (let i = 0; i < n; i++) { const a = (Math.PI * 2 * i) / n - Math.PI / 2; const rr = R * (vals[i] / MAX_SKILL_LEVEL); const x = cx + Math.cos(a) * rr; const y = cy + Math.sin(a) * rr; i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); } ctx.closePath(); ctx.fillStyle = fill; ctx.strokeStyle = stroke; ctx.lineWidth = 2; ctx.fill(); ctx.stroke(); }
+        poly(data.map((d) => d.req), "rgba(59, 130, 246, 0.06)", "#344038"); poly(data.map((d) => d.user), "rgba(59, 130, 246, 0.18)", "#3B82F6");
+      }
+
+      // ═══════════════════════════════════
+      // EVIDENCE MODAL
+      // ═══════════════════════════════════
+      window.openEvidenceModal = function(skillKey) {
+        const current = state.profile.evidence?.[skillKey] || {};
+        const url = prompt("أدخل رابط الإثبات (مثال: GitHub/Drive):", current.url || "");
+        if (url !== null) {
+          if (!state.profile.evidence) state.profile.evidence = {};
+          state.profile.evidence[skillKey] = { url: url.trim(), note: "", updatedAt: nowISO() };
+          store.set(STORAGE_KEY_PROFILE, state.profile); toast(i18n.t("evidenceSaved"));
+          if (state.analysis) renderAnalysis(state.analysis.res, state.analysis.role);
+        }
+      }
+
+      // ═══════════════════════════════════
+      // CHAT (تأثير الآلة الكاتبة)
+      // ═══════════════════════════════════
+      function saySiraj(sender, text) {
+        const w = document.createElement("div");
+        w.className = "msg " + (sender === "siraj" ? "msg-siraj" : "msg-user");
+        const b = document.createElement("div");
+        b.className = "bubble";
+        w.appendChild(b);
+        dom.dialog.appendChild(w);
+        dom.dialog.scrollTop = dom.dialog.scrollHeight;
+
+        if (sender === "user") { b.textContent = text; return; }
+
+        let i = 0; b.textContent = "";
+        function typeWriter() {
+          if (i < text.length) {
+            b.textContent += text.charAt(i); i++;
+            dom.dialog.scrollTop = dom.dialog.scrollHeight;
+            setTimeout(typeWriter, 20);
+          }
+        }
+        typeWriter();
+      }
+
+      function handleChat(text) {
+        const raw = (text || "").trim(); if (!raw) return;
+        saySiraj("user", raw); const t = raw.toLowerCase(); 
+        if (t.includes("ناقصني") || t.includes("وش ناقصني")) {
+          if (!state.analysis) { saySiraj("siraj", "حلّل جاهزيتك أولاً ثم اسألني."); return; }
+          saySiraj("siraj", `أهم الفجوات: ${state.analysis.res.missing.slice(0,2).map((m) => m.label).join("، ")}. ركّز عليها.`);
+          return;
+        }
+        if (t.includes("أفضل وظيفة")) { autoPickBestRole(); setTab("roles"); saySiraj("siraj", "تم اختيار أفضل وظيفة تناسب مهاراتك آلياً."); return; }
+        saySiraj("siraj", "أقدر أساعدك في اختيار الوظيفة أو تحليل الفجوات، استخدم الأزرار السريعة.");
+      }
+
+      // ═══════════════════════════════════
+      // PDF (التقرير التنفيذي الفاخر)
+      // ═══════════════════════════════════
+      function downloadPDF(rep) {
+        if (typeof html2pdf === "undefined") { toast("مكتبة PDF غير متوفرة."); return; }
+        toast("جاري تجهيز التقرير التنفيذي...");
+        const printDiv = document.createElement("div");
+        printDiv.style.cssText = "background:#fff;color:#000;padding:40px;font-family:sans-serif;width:800px;position:absolute;top:-9999px";
+        printDiv.style.direction = rep.lang === "ar" ? "rtl" : "ltr";
+        
+        const sectorName = rep.profile.sector === "gov" ? "حكومي" : rep.profile.sector === "private" ? "خاص" : "شبه حكومي";
+        let missingHtml = (rep.result.missing || []).map(m => `<li style="margin-bottom: 12px; background: #F9FAFB; padding: 10px 16px; border-radius: 8px; border: 1px solid #E5E7EB;"><b>${escHtml(m.label)}</b> (مطلوب: ${m.reqLevel} — مستواك: ${m.userLevel})</li>`).join("");
+
+        printDiv.innerHTML = `
+          <div style="border: 8px solid #0B1120; padding: 40px; border-radius: 16px; background: #fff; position: relative;">
+            <div style="text-align:center; border-bottom: 3px solid #3B82F6; padding-bottom: 24px; margin-bottom: 30px;">
+              <h1 style="color: #0B1120; margin: 0; font-size: 32px; font-weight: 900; letter-spacing: -1px;">سِراج <span style="color:#3B82F6">SIRAJ</span></h1>
+              <h2 style="color: #3B82F6; margin: 8px 0 0 0; font-size: 20px;">التقرير الاستشاري للجاهزية المهنية</h2>
+              <p style="color: #6B7280; margin-top: 12px; font-size: 12px; font-family: monospace;">
+                REF: ${escHtml(rep.id).toUpperCase()} | DATE: ${new Date(rep.createdAt).toLocaleDateString("ar-SA")}
+              </p>
+            </div>
+            <div style="background: #F3F4F6; padding: 24px; border-radius: 12px; border-right: 6px solid #3B82F6; margin-bottom: 30px;">
+              <h3 style="margin:0 0 16px 0; color:#111; font-size:18px;">الملخص التنفيذي</h3>
+              <table style="width: 100%; text-align: right; font-size: 15px;">
+                <tr><td style="padding: 8px 0; border-bottom:1px solid #E5E7EB;"><b>الوظيفة المستهدفة:</b> ${escHtml(rep.role?.name || "")}</td><td style="padding: 8px 0; border-bottom:1px solid #E5E7EB;"><b>القطاع:</b> ${escHtml(sectorName)}</td></tr>
+                <tr><td style="padding: 8px 0;"><b>مؤشر الجاهزية:</b> <span style="color:#10B981; font-weight:900; font-size: 18px;">${rep.result.score}%</span></td><td style="padding: 8px 0;"><b>الوقت للجاهزية:</b> <b>${rep.result.estWeeks || 0}</b> أسابيع</td></tr>
+              </table>
+            </div>
+            <h3 style="color:#0B1120; font-size:20px; border-bottom: 2px solid #E5E7EB; padding-bottom: 10px; margin-bottom: 16px;">تحليل فجوة المهارات</h3>
+            <ul style="font-size: 15px; line-height: 2; color: #374151; margin-bottom: 30px; list-style-type: none; padding:0;">${missingHtml}</ul>
+            <div style="margin-top: 50px; text-align: center; color: #9CA3AF; font-size: 11px; border-top: 1px solid #E5E7EB; padding-top: 20px;">تم توليد هذا التقرير آلياً عبر محرك سِراج لتمكين المواهب الوطنية وفق متطلبات رؤية المملكة 2030.</div>
+          </div>
+        `;
+        document.body.appendChild(printDiv);
+        html2pdf().set({ margin: 0.5, filename: `Siraj_Executive_Report_${rep.id}.pdf`, jsPDF: { unit: "in", format: "a4", orientation: "portrait" } }).from(printDiv).save().then(() => { toast(i18n.t("pdfDone")); document.body.removeChild(printDiv); });
+      }
+
+      // ═══════════════════════════════════
+      // EVENTS
+      // ═══════════════════════════════════
+      function bindEvents() {
+        dom.tabs.forEach((b) => b.addEventListener("click", () => setTab(b.dataset.tab)));
+        dom.steps.forEach((s) => s.addEventListener("click", () => setTab(s.dataset.step)));
+
+        // 🌟 تفعيل زر صفحة الترحيب والانتقال للتطبيق 🌟
+        const startBtn = $("startAppBtn");
+        if (startBtn) {
+          startBtn.addEventListener("click", () => {
+            $("landingPage").style.display = "none";
+            $("appContent").style.display = "block";
+            saySiraj("siraj", "مرحباً بك! أنا سِراج 🤖. لنبدأ بتسجيل تخصصك ومهاراتك الحالية لنبني خطتك المهنية وتكون جاهزاً لسوق العمل.");
+          });
+        }
+
+        $("addSkillBtn").addEventListener("click", () => { addSkill(dom.skillName.value, dom.skillLevel.value); dom.skillName.value = ""; dom.skillName.focus(); });
+        dom.skillName.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); $("addSkillBtn").click(); } });
+
+        // تجهيز الديمو بضغطة زر
+        $("loadSampleBtn").addEventListener("click", () => {
+          state.profile.major = "نظم المعلومات"; state.profile.eduLevel = "UNI"; state.profile.experienceYears = 0; state.profile.sector = "quasi";
+          state.profile.skills = [{ raw: "SQL", key: "sql", level: 3 }, { raw: "Power BI", key: "powerbi", level: 4 }, { raw: "تحليل المتطلبات", key: "requirements", level: 2 }];
+          loadProfileToInputs(); renderSkillsTable(); state.selectedRoleId = "data_analyst"; renderRoles(); toast("تم تجهيز ملف طالب نظم معلومات");
+        });
+
+        $("saveProfileBtn").addEventListener("click", saveProfile); $("resetProfileBtn").addEventListener("click", resetProfile);
+        $("autoPickBtn").addEventListener("click", autoPickBestRole);
+
+        // 🌟 زر التحليل (مع الإضاءة و Make.com Fallback) 🌟
+        $("analyzeBtn").addEventListener("click", () => {
+          if (!validateProfile()) { toast(i18n.t("fillFirst")); setTab("profile"); return; }
+          if (!state.selectedRoleId) { toast(i18n.t("pickRole")); setTab("roles"); return; }
+          const role = ROLES.find((r) => r.id === state.selectedRoleId); if (!role) return;
+
+          const btn = $("analyzeBtn"); const originalText = btn.innerHTML;
+          btn.innerHTML = "💡 جاري إضاءة المنارة وتحليل البيانات بالذكاء الاصطناعي...";
+          btn.disabled = true; btn.classList.add("tech-bulb-loading");
+
+          setTimeout(async () => {
+            try {
+              // تجهيز الـ Fallback المحلي كـ Backup
+              let res = analyzeFallback(state.profile, role);
+              const payload = { profile: state.profile, roleId: role.id, roleName: role.ar, sector: state.profile.sector || "quasi" };
+              
+              // إذا تم ضبط رابط Make.com، حاول استدعائه
+              if (AI_WEBHOOK_URL.includes("hook.")) {
+                try {
+                  const aiResp = await fetch(AI_WEBHOOK_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+                  if (aiResp.ok) { const aiData = await aiResp.json(); res = { ...res, score: aiData.score || res.score, missing: aiData.missing || res.missing, roadmap: aiData.roadmap || res.roadmap, projects: aiData.projects || res.projects, estWeeks: aiData.estWeeks !== undefined ? aiData.estWeeks : res.estWeeks }; }
+                } catch (err) { console.warn("Make webhook failed, using local AI engine"); toast(i18n.t("analysisError")); }
+              }
+              
+              state.analysis = { role, res }; renderAnalysis(res, role); setTab("analysis");
+              saySiraj("siraj", `اكتمل التحليل! نسبة جاهزيتك لـ "${role.ar}" هي ${res.score}/100.`);
+            } catch (e) { toast(i18n.t("analysisError")); } 
+            finally { btn.innerHTML = originalText; btn.disabled = false; btn.classList.remove("tech-bulb-loading"); }
+          }, 2500); // 2.5 ثانية لعرض تأثير المنارة قبل ظهور النتيجة
+        });
+
+        $("saveReportBtn").addEventListener("click", () => {
+          if (!state.analysis) return;
+          const rep = { id: uid(), createdAt: nowISO(), lang: i18n.lang, profile: state.profile, role: { id: state.analysis.role.id, name: state.analysis.role.ar }, result: state.analysis.res };
+          state.reportId = rep.id; store.get(STORAGE_KEY_REPORTS, {})[rep.id] = rep; toast("تم حفظ التقرير"); setTab("report");
+        });
+
+        $("downloadPdfBtn").addEventListener("click", () => {
+          if (!state.analysis) return toast("يرجى تحليل الجاهزية أولاً");
+          const rep = { id: state.reportId || uid(), createdAt: nowISO(), lang: i18n.lang, profile: state.profile, role: state.analysis.role, result: state.analysis.res };
+          downloadPDF(rep);
+        });
+
+        $("chatSendBtn").addEventListener("click", () => { handleChat(dom.chatInput.value); dom.chatInput.value = ""; dom.chatInput.focus(); });
+        dom.chatInput.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); $("chatSendBtn").click(); } });
+        document.querySelectorAll(".quick-btn").forEach((b) => b.addEventListener("click", () => handleChat(b.dataset.q)));
+      }
+
+      function init() { cacheDom(); bindEvents(); loadProfile(); renderRoles(); setTab("profile"); }
+      init();
+    })();
+  </script>
+</body>
+</html>
