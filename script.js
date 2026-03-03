@@ -1,3 +1,5 @@
+const ANALYSIS_WEBHOOK = "https://hook.eu1.make.com/YOUR_ANALYSIS_WEBHOOK";
+const CHAT_WEBHOOK     = "https://hook.eu1.make.com/YOUR_CHAT_WEBHOOK";
 (() => {
   "use strict";
 
@@ -12,7 +14,22 @@
   const CUSTOM_SKILL_PREFIX = "custom:";
   const STORAGE_KEY_PROFILE = "siraj_profile_v3";
   const STORAGE_KEY_REPORTS = "siraj_reports_v3";
+const BACKEND_API_URL = "http://127.0.0.1:8000";
 
+// عند الضغط على زر حفظ التقرير
+async function saveToBackend(reportData) {
+    try {
+        const response = await fetch(`${BACKEND_API_URL}/reports`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ payload: reportData })
+        });
+        return await response.json();
+    } catch (error) {
+        console.error("Backend offline");
+        return null;
+    }
+}
   // ═══════════════════════════════════
   // UTILITIES
   // ═══════════════════════════════════
@@ -241,8 +258,22 @@
       }
     }
 
-    dom.roadmap.innerHTML = res.roadmap.map(w => `<div class="week"><div class="week-head"><div class="w">الأسبوع ${w.week} <span class="phase-tag">${w.phase}</span></div><div class="focus">${w.focus.join(" + ")}</div></div><ul>${w.tasks.map(t => `<li>${escHtml(t.title)} <span style="color:var(--muted)">— ${escHtml(t.resource)}</span></li>`).join("")}</ul></div>`).join("");
-    dom.projects.innerHTML = res.projects.map(p => `<div class="project"><h5>${escHtml(p.title)}</h5><div class="small" style="margin-top:6px">${escHtml(p.objective)}</div></div>`).join("");
+// الخارطة التفاعلية مع دعم الروابط التلقائية
+dom.roadmap.innerHTML = `<div class="timeline">` + 
+  res.roadmap.map(w => {
+    const skillKey = normalizeSkillName(w.focus[0]);
+    const resLink = (RESOURCES[skillKey] || RESOURCES.default)[0].url;
+    return `
+    <div class="timeline-item">
+      <div class="timeline-content" onclick="window.open('${resLink}', '_blank')">
+        <div class="week-head">
+          <div class="w">الأسبوع ${w.week} <span class="phase-tag">${escHtml(w.phase)}</span></div>
+          <div class="focus">${w.focus.map(f=>escHtml(f)).join(" + ")}</div>
+        </div>
+        <p style="font-size:11px; color:var(--primary); margin-top:8px;">🖱️ اضغط لفتح المصادر التعليمية</p>
+      </div>
+    </div>`;
+  }).join("") + `</div>`;    dom.projects.innerHTML = res.projects.map(p => `<div class="project"><h5>${escHtml(p.title)}</h5><div class="small" style="margin-top:6px">${escHtml(p.objective)}</div></div>`).join("");
 
     try { drawBarChart(dom.barChart, res.charts); drawRadarChart(dom.radarChart, res.charts); } catch (e) { console.error(e); }
     state.completedSteps.add("analysis");
@@ -322,40 +353,38 @@
   // ═══════════════════════════════════
   // PDF (التقرير التنفيذي الفاخر)
   // ═══════════════════════════════════
-  function downloadPDF(rep) {
-    if (typeof html2pdf === "undefined") { toast("مكتبة PDF غير متوفرة."); return; }
-    toast("جاري تجهيز التقرير التنفيذي...");
-    const printDiv = document.createElement("div");
-    printDiv.style.cssText = "background:#fff;color:#000;padding:40px;font-family:sans-serif;width:800px;position:absolute;top:-9999px";
-    printDiv.style.direction = rep.lang === "ar" ? "rtl" : "ltr";
-    
-    const sectorName = rep.profile.sector === "gov" ? "حكومي" : rep.profile.sector === "private" ? "خاص" : "شبه حكومي";
-    let missingHtml = (rep.result.missing || []).map(m => `<li style="margin-bottom: 12px; background: #F9FAFB; padding: 10px 16px; border-radius: 8px; border: 1px solid #E5E7EB;"><b>${escHtml(m.label)}</b> (مطلوب: ${m.reqLevel} — مستواك: ${m.userLevel})</li>`).join("");
-
-    printDiv.innerHTML = `
-      <div style="border: 8px solid #0B1120; padding: 40px; border-radius: 16px; background: #fff; position: relative;">
-        <div style="text-align:center; border-bottom: 3px solid #3B82F6; padding-bottom: 24px; margin-bottom: 30px;">
-          <h1 style="color: #0B1120; margin: 0; font-size: 32px; font-weight: 900; letter-spacing: -1px;">سِراج <span style="color:#3B82F6">SIRAJ</span></h1>
-          <h2 style="color: #3B82F6; margin: 8px 0 0 0; font-size: 20px;">التقرير الاستشاري للجاهزية المهنية</h2>
-          <p style="color: #6B7280; margin-top: 12px; font-size: 12px; font-family: monospace;">
-            REF: ${escHtml(rep.id).toUpperCase()} | DATE: ${new Date(rep.createdAt).toLocaleDateString("ar-SA")}
-          </p>
-        </div>
-        <div style="background: #F3F4F6; padding: 24px; border-radius: 12px; border-right: 6px solid #3B82F6; margin-bottom: 30px;">
-          <h3 style="margin:0 0 16px 0; color:#111; font-size:18px;">الملخص التنفيذي</h3>
-          <table style="width: 100%; text-align: right; font-size: 15px;">
-            <tr><td style="padding: 8px 0; border-bottom:1px solid #E5E7EB;"><b>الوظيفة المستهدفة:</b> ${escHtml(rep.role?.name || "")}</td><td style="padding: 8px 0; border-bottom:1px solid #E5E7EB;"><b>القطاع:</b> ${escHtml(sectorName)}</td></tr>
-            <tr><td style="padding: 8px 0;"><b>مؤشر الجاهزية:</b> <span style="color:#10B981; font-weight:900; font-size: 18px;">${rep.result.score}%</span></td><td style="padding: 8px 0;"><b>الوقت للجاهزية:</b> <b>${rep.result.estWeeks || 0}</b> أسابيع</td></tr>
-          </table>
-        </div>
-        <h3 style="color:#0B1120; font-size:20px; border-bottom: 2px solid #E5E7EB; padding-bottom: 10px; margin-bottom: 16px;">تحليل فجوة المهارات</h3>
-        <ul style="font-size: 15px; line-height: 2; color: #374151; margin-bottom: 30px; list-style-type: none; padding:0;">${missingHtml}</ul>
-        <div style="margin-top: 50px; text-align: center; color: #9CA3AF; font-size: 11px; border-top: 1px solid #E5E7EB; padding-top: 20px;">تم توليد هذا التقرير آلياً عبر محرك سِراج لتمكين المواهب الوطنية وفق متطلبات رؤية المملكة 2030.</div>
-      </div>
-    `;
-    document.body.appendChild(printDiv);
-    html2pdf().set({ margin: 0.5, filename: `Siraj_Executive_Report_${rep.id}.pdf`, jsPDF: { unit: "in", format: "a4", orientation: "portrait" } }).from(printDiv).save().then(() => { toast(i18n.t("pdfDone")); document.body.removeChild(printDiv); });
-  }
+// 🌟 دالة تصدير الـ PDF المحدثة 🌟
+      function downloadPDF(rep) {
+        if (typeof html2pdf === "undefined") { toast("مكتبة PDF غير متوفرة."); return; }
+        toast("جاري تجهيز التقرير التنفيذي...");
+        
+        const printArea = document.createElement("div");
+        printArea.style.cssText = "padding:40px; color:#000; background:#fff; width:800px; font-family:sans-serif; direction:rtl; position:absolute; top:-9999px;";
+        
+        printArea.innerHTML = `
+          <div style="border: 4px solid #0B1120; padding: 30px; border-radius: 12px;">
+            <h1 style="color: #3B82F6; text-align: center; margin-bottom: 5px; font-weight: 900;">سِراج SIRAJ</h1>
+            <h3 style="text-align: center; color: #6B7280; margin-top: 0;">التقرير الاستشاري للجاهزية المهنية</h3>
+            <hr style="border: 1px solid #E5E7EB; margin: 20px 0;">
+            <div style="background: #F3F4F6; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+              <p style="margin: 5px 0; font-size: 16px;"><b>الوظيفة المستهدفة:</b> ${rep.role.name || rep.role.ar}</p>
+              <p style="margin: 5px 0; font-size: 16px;"><b>نسبة الجاهزية:</b> <span style="color:#10B981; font-weight:900; font-size:20px;">${rep.result.score}%</span></p>
+            </div>
+            <h3 style="color: #0B1120;">أهم الفجوات والمهارات المطلوبة:</h3>
+            <ul style="line-height: 2; font-size: 15px;">
+              ${(rep.result.missing || []).map(m => `<li style="margin-bottom: 10px; background: #F9FAFB; padding: 10px; border: 1px solid #E5E7EB; border-radius: 6px;"><b>${m.label}</b> (مطلوب: ${m.reqLevel} — مستواك الحالي: ${m.userLevel})</li>`).join("")}
+            </ul>
+            <p style="text-align: center; font-size: 11px; color: #9CA3AF; margin-top: 40px;">تم التوليد آلياً عبر محرك سِراج</p>
+          </div>
+        `;
+        
+        document.body.appendChild(printArea);
+        html2pdf().set({ margin: 0.5, filename: 'Siraj_Executive_Report.pdf', jsPDF: { unit: "in", format: "a4", orientation: "portrait" } })
+          .from(printArea).save().then(() => { 
+            toast("تم تصدير التقرير ✅"); 
+            document.body.removeChild(printArea); 
+          });
+      }
 
   // ═══════════════════════════════════
   // EVENTS
@@ -363,28 +392,102 @@
   function bindEvents() {
     dom.tabs.forEach((b) => b.addEventListener("click", () => setTab(b.dataset.tab)));
     dom.steps.forEach((s) => s.addEventListener("click", () => setTab(s.dataset.step)));
+// بنك أسئلة المقابلة التجريبية
+const INTERVIEW_DB = {
+    data_analyst: ["ما الفرق بين الـ SQL والـ NoSQL؟", "كيف تتعامل مع البيانات المفقودة؟", "اشرح مفهوم الـ P-value ببساطة؟"],
+    software_engineer: ["ما هو مفهوم الـ OOP؟", "اشرح الفرق بين الـ API والـ Webhook؟", "ما فائدة الـ Git في المشاريع الجماعية؟"],
+    default: ["اشرح أكبر تحدي تقني واجهته؟", "كيف تطور مهاراتك بشكل مستمر؟", "ما هو مشروع أحلامك التقني؟"]
+};
 
-    // 🌟 تفعيل زر صفحة الترحيب والانتقال للتطبيق 🌟
-    const startBtn = $("startAppBtn");
-    if (startBtn) {
-      startBtn.addEventListener("click", () => {
-        $("landingPage").style.display = "none";
-        $("appContent").style.display = "block";
-        saySiraj("siraj", "مرحباً بك! أنا سِراج 🤖. لنبدأ بتسجيل تخصصك ومهاراتك الحالية لنبني خطتك المهنية وتكون جاهزاً لسوق العمل.");
-      });
-    }
+$("mockInterviewBtn").addEventListener("click", () => {
+    if (!state.analysis) return toast("حلّل جاهزيتك أولاً");
+    
+    const roleId = state.analysis.role.id;
+    const questions = INTERVIEW_DB[roleId] || INTERVIEW_DB.default;
+    let count = 0;
 
+    saySiraj("siraj", `أهلاً بك! لنبدأ مقابلة تجريبية لوظيفة ${state.analysis.role.ar}. سأطرح عليك 3 أسئلة...`);
+
+    const ask = () => {
+        if (count < 3) {
+            setTimeout(() => {
+                saySiraj("siraj", `السؤال ${count + 1}: ${questions[count]}`);
+                count++;
+            }, 1500);
+        } else {
+            setTimeout(() => saySiraj("siraj", "أحسنت! انتهت المقابلة. ركز على مهاراتك الناقصة لتبهر المحاورين الحقيقيين."), 2000);
+        }
+    };
+    ask();
+});
+    // 🌟 تفعيل زر صفحة الترحيب والانتقال للتطبيق (مع أنيميشن فخم) 🌟
+        // 🌟 تفعيل زر صفحة الترحيب والانتقال للتطبيق (بطريقة قاطعة تمنع التداخل) 🌟
+        const oldBtn = $("startAppBtn");
+        if (oldBtn) {
+          // خدعة: ننسخ الزر ونستبدله عشان نمسح أي أوامر قديمة معلقة فيه بالغلط
+          const startBtn = oldBtn.cloneNode(true);
+          oldBtn.parentNode.replaceChild(startBtn, oldBtn);
+          
+          startBtn.addEventListener("click", () => {
+            const landing = $("landingPage");
+            const app = $("appContent");
+            
+            // 1. تشغيل تأثير الاختفاء الناعم
+            landing.classList.add("fade-out-landing");
+            
+            // 2. الانتظار نص ثانية، ثم إظهار التطبيق بتأثير الدخول
+            setTimeout(() => {
+              landing.style.display = "none";
+              app.style.display = "block";
+              app.classList.add("fade-in-app");
+              
+              saySiraj("siraj", "مرحباً بك! أنا سِراج 🤖. لنبدأ بتسجيل تخصصك ومهاراتك الحالية لنبني خطتك المهنية وتكون جاهزاً لسوق العمل.");
+            }, 500);
+          });
+        }
     $("addSkillBtn").addEventListener("click", () => { addSkill(dom.skillName.value, dom.skillLevel.value); dom.skillName.value = ""; dom.skillName.focus(); });
     dom.skillName.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); $("addSkillBtn").click(); } });
 
     // تجهيز الديمو بضغطة زر
-    $("loadSampleBtn").addEventListener("click", () => {
-      state.profile.major = "نظم المعلومات"; state.profile.eduLevel = "UNI"; state.profile.experienceYears = 0; state.profile.sector = "quasi";
-      state.profile.skills = [{ raw: "SQL", key: "sql", level: 3 }, { raw: "Power BI", key: "powerbi", level: 4 }, { raw: "تحليل المتطلبات", key: "requirements", level: 2 }];
-      loadProfileToInputs(); renderSkillsTable(); state.selectedRoleId = "data_analyst"; renderRoles(); toast("تم تجهيز ملف طالب نظم معلومات");
-    });
+   // 🌟 ديمو الحكام المحدث 🌟
+        $("loadSampleBtn").addEventListener("click", () => {
+          dom.major.value = "نظم المعلومات";
+          dom.experienceYears.value = "0";
+          dom.sector.value = "quasi";
+          state.profile.major = "نظم المعلومات";
+          state.profile.eduLevel = "UNI";
+          state.profile.experienceYears = 0;
+          state.profile.sector = "quasi";
+          state.profile.skills = [
+            { raw: "SQL", key: "sql", level: 3 },
+            { raw: "Power BI", key: "powerbi", level: 4 },
+            { raw: "تحليل المتطلبات", key: "requirements", level: 2 }
+          ];
+          renderSkillsTable(); // تحديث جدول المهارات بالشاشة
+          state.selectedRoleId = "data_analyst";
+          renderRoles(); // تحديث اختيار الوظيفة
+          toast("تم تحميل بيانات طالب نظم المعلومات بنجاح 🚀");
+        });
 
     $("saveProfileBtn").addEventListener("click", saveProfile); $("resetProfileBtn").addEventListener("click", resetProfile);
+    
+    // 🌟 زر التالي (يحفظ وينقل للوظائف ويرفع الشاشة) 🌟
+       // حل مشكلة زر التالي
+const nextBtn = document.getElementById("nextStepBtn");
+if (nextBtn) {
+    const newNextBtn = nextBtn.cloneNode(true); // مسح أي أوامر معلقة
+    nextBtn.parentNode.replaceChild(newNextBtn, nextBtn);
+    
+    newNextBtn.addEventListener("click", () => {
+        if (validateProfile()) { // التأكد من إدخال البيانات
+            saveProfile();
+            setTab("roles"); // الانتقال لتبويب الوظائف
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        } else {
+            toast(i18n.t("fillFirst"));
+        }
+    });
+}
     $("autoPickBtn").addEventListener("click", autoPickBestRole);
 
     // 🌟 زر التحليل (مع الإضاءة و Make.com Fallback) 🌟
